@@ -1,0 +1,39 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Home{% endblock %}</title>
+    <link rel="stylesheet" href="{% static 'css/homesample.css' %}">
+</head>
+<body>
+    <header>
+    
+        <nav>
+            <ul>
+                <li><a href="{% url 'home' %}">Home</a></li>
+                <li><a href="{% url 'about' %}">About</a></li>
+                <li><a href="{% url 'resources' %}">Resources</a></li>
+                <li><a href="{% url 'contact' %}">Contact</a></li>
+                <li><a href="{% url 'user_login' %}">Login</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <section class="slogan">
+        <h2>Transform your Health Journey with Personalized Wellness Plan</h2>
+        <p>Join us today to begin your journey to holistic wellness.</p>
+        <a href="{% url 'register_user' %}" class="btn">Get Started</a>
+        <div class="illustration">
+            <!-- Illustration or images -->
+        </div>
+    </section>
+
+    <footer>
+         <p>&copy; 2025 WMSU WELLNESS. All rights reserved.</p>
+          <p><a href="{% url 'contact' %}">Contact Us</a></p> 
+    </footer>
+
+</body>
+</html>

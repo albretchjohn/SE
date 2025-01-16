@@ -1,0 +1,68 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>View User Details and Diet Plan</title>
+    <link rel="stylesheet" href="{% static 'css/user_view_details_style.css' %}">
+</head>
+<body>
+    <a href="{% url 'he_dashboard' %}">Back</a>
+    <div class="details-container">
+        <h2>User Details</h2>
+        <p>Name: {{ user_profile.first_name }} {{ user_profile.last_name }}</p>
+        <p>Department: {{ user_profile.college_department }}</p>
+        <p>Gender: {{ user_profile.gender }}</p>
+        <p>Birthday: {{ user_profile.birthday }}</p>
+        <p>Height: {{ user_profile.height }} cm</p>
+        <p>Weight: {{ user_profile.weight }} kg</p>
+        <p>BMI: {{ user_profile.bmi }}</p>
+        <p>Body Type: {{ user_profile.body_type }}</p>
+        <p>Activity Level: {{ user_profile.activity_level }}</p>
+        <p>Health Conditions: {{ user_profile.health_condition }}</p>
+        <p>Allergies: {{ user_profile.allergies }}</p>
+        <p>Injuries: {{ user_profile.injuries }}</p>
+
+        <h2>Diet Plan</h2>
+        <form method="post">
+            {% csrf_token %}
+            <div class="form-group">
+                <label>Calorie Intake Per Day</label>
+                <input type="number" name="calorie_intake_per_day" value="{{ diet_plan.calorie_intake_per_day }}">
+            </div>
+            
+            <div class="form-group">
+                <label>Carbs Per Meal (g)</label>
+                <input type="number" name="carbs_per_meal" value="{{ diet_plan.carbs_per_meal }}">
+            </div>
+            
+            <div class="form-group">
+                <label>Fats Per Meal (g)</label>
+                <input type="number" name="fats_per_meal" value="{{ diet_plan.fats_per_meal }}">
+            </div>
+            
+            <div class="form-group">
+                <label>Protein Per Meal (g)</label>
+                <input type="number" name="protein_per_meal" value="{{ diet_plan.protein_per_meal }}">
+            </div>
+
+            <div class="form-group">
+                <label>Status</label>
+                <select name="status">
+                    <option value="Pending" {% if diet_plan.status == 'Pending' %}selected{% endif %}>Pending</option>
+                    <option value="Approved" {% if diet_plan.status == 'Approved' %}selected{% endif %}>Approved</option>
+                    <option value="Rejected" {% if diet_plan.status == 'Rejected' %}selected{% endif %}>Rejected</option>
+                </select>
+            </div>
+            
+            <div class="form-group">
+                <label>Review Comments</label>
+                <textarea name="review_comments" rows="4"></textarea>
+            </div>
+            
+            <button type="submit">Save Changes</button>
+        </form>
+    </div>
+</body>
+</html>

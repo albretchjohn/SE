@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Exercise Plans</title>
+</head>
+<body>
+    <h1>All Exercise Plans</h1>
+    <table border="1">
+        <thead>
+            <tr>
+                <th>User</th>
+                <th>Strength Exercises</th>
+                <th>Flexibility Exercises</th>
+                <th>Cardio Exercises</th>
+                <th>Routine</th>
+                <th>Rest Day</th>
+                <th>Status</th>
+                <th>Date Created</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for plan in exercise_plans %}
+                <tr>
+                    <td>{{ plan.user.username }}</td>
+                    <td>{{ plan.strength_exercises }}</td>
+                    <td>{{ plan.flexibility_exercises }}</td>
+                    <td>{{ plan.cardio_exercises }}</td>
+                    <td>
+                        <ul>
+                            {% for day, exercises in plan.routine.items %}
+                                <li><strong>{{ day }}:</strong>
+                                    <ul>
+                                        {% for exercise in exercises %}
+                                            <li>{{ exercise.name }} - Reps: {{ exercise.reps }}, Sets: {{ exercise.sets }}</li>
+                                        {% endfor %}
+                                    </ul>
+                                </li>
+                            {% endfor %}
+                        </ul>
+                    </td>
+                    <td>{{ plan.rest_day }}</td>
+                    <td>{{ plan.status }}</td>
+                    <td>{{ plan.date_created }}</td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</body>
+</html>

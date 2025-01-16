@@ -1,0 +1,20 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Resend OTP</title>
+    <link rel="stylesheet" href="{% static 'css/verify_otp_style.css' %}">
+</head>
+<body>
+    <div class="register-container">
+        <form method="post" class="register-form">
+            {% csrf_token %}
+            <h2>Resend OTP</h2>
+            <input type="text" name="username" placeholder="Username" required>
+            <button type="submit">Resend OTP</button>
+        </form>
+    </div>
+</body>
+</html>

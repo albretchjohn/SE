@@ -1,0 +1,78 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>View User Details</title>
+    <link rel="stylesheet" href="{% static 'css/user_view_details_style.css' %}">
+</head>
+<body>
+    <a href="{% url 'csspe_dashboard' %}">Back</a>
+    <div class="details-container">
+        <h2>User Details</h2>
+        <p>Name: {{ user_profile.first_name }} {{ user_profile.last_name }}</p>
+        <p>Department: {{ user_profile.college_department }}</p>
+        <p>Gender: {{ user_profile.gender }}</p>
+        <p>Birthday: {{ user_profile.birthday }}</p>
+        <p>Height: {{ user_profile.height }} cm</p>
+        <p>Weight: {{ user_profile.weight }} kg</p>
+        <p>BMI: {{ user_profile.bmi }}</p>
+        <p>Body Type: {{ user_profile.body_type }}</p>
+        <p>Activity Level: {{ user_profile.activity_level }}</p>
+        <p>Health Conditions: {{ user_profile.health_condition }}</p>
+        <p>Allergies: {{ user_profile.allergies }}</p>
+        <p>Injuries: {{ user_profile.injuries }}</p>
+
+        {% if diet_plan %}
+            <h2>Diet Plan (Approved)</h2>
+            <p>Calorie Intake Per Day: {{ diet_plan.calorie_intake_per_day }} kcal</p>
+            <p>Carbs Per Meal: {{ diet_plan.carbs_per_meal }} g</p>
+            <p>Fats Per Meal: {{ diet_plan.fats_per_meal }} g</p>
+            <p>Protein Per Meal: {{ diet_plan.protein_per_meal }} g</p>
+        {% endif %}
+
+        <h2>Exercise Plan</h2>
+        <form method="post">
+            {% csrf_token %}
+            {% for day, exercises in exercise_plan.routine.items %}
+                <h3>{{ day|capfirst }}</h3>
+                {% for exercise in exercises %}
+                    <div class="form-group">
+                        <label>Exercise Name</label>
+                        <input type="text" name="routine[{{ day }}][{{ forloop.counter0 }}][name]" value="{{ exercise.name }}">
+                    </div>
+                    <div class="form-group">
+                        <label>Duration</label>
+                        <input type="text" name="routine[{{ day }}][{{ forloop.counter0 }}][duration]" value="{{ exercise.duration }}">
+                    </div>
+                    <div class="form-group">
+                        <label>Reps</label>
+                        <input type="number" name="routine[{{ day }}][{{ forloop.counter0 }}][reps]" value="{{ exercise.reps }}">
+                    </div>
+                    <div class="form-group">
+                        <label>Sets</label>
+                        <input type="number" name="routine[{{ day }}][{{ forloop.counter0 }}][sets]" value="{{ exercise.sets }}">
+                    </div>
+                {% endfor %}
+            {% endfor %}
+
+            <div class="form-group">
+                <label>Status</label>
+                <select name="status">
+                    <option value="Pending" {% if exercise_plan.status == 'Pending' %}selected{% endif %}>Pending</option>
+                    <option value="Approved" {% if exercise_plan.status == 'Approved' %}selected{% endif %}>Approved</option>
+                    <option value="Rejected" {% if exercise_plan.status == 'Rejected' %}selected{% endif %}>Rejected</option>
+                </select>
+            </div>
+            
+            <div class="form-group">
+                <label>Review Comments</label>
+                <textarea name="review_comments" rows="4"></textarea>
+            </div>
+            
+            <button type="submit">Save Changes</button>
+        </form>
+    </div>
+</body>
+</html>

@@ -1,0 +1,42 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Contact Us</title>
+    <link rel="stylesheet" href="{% static 'css/contact_style.css' %}">
+</head>
+<body>
+    <button class="back-btn" onclick="history.back()">Back</button>
+    <section class="contact-us">
+        <h2>Contact Us</h2>
+        <p>If you have any questions, suggestions, or just want to say hello, please feel free to reach out to us. We’d love to hear from you!</p>
+        
+        <div class="contact-info">
+            <h3>Contact Information</h3>
+            <p><strong>Organization/Department:</strong> Wellness Program, Western Mindanao State University</p>
+            <p><strong>Address:</strong> Western Mindanao State University, Zamboanga City, Philippines</p>
+            <p><strong>Email:</strong> wellness@wmsu.edu.ph</p>
+            <p><strong>Phone:</strong> +63 917 123 4567</p>
+        </div>
+        
+        <div class="contact-form">
+            <h3>Send Us a Message</h3>
+            <form action="#" method="post">
+                {% csrf_token %}
+                <label for="name">Name:</label>
+                <input type="text" id="name" name="name" required>
+
+                <label for="email">Email:</label>
+                <input type="email" id="email" name="email" required>
+
+                <label for="message">Message:</label>
+                <textarea id="message" name="message" rows="4" required></textarea>
+
+                <button type="submit" class="btn">Send Message</button>
+            </form>
+        </div>
+    </section>
+</body>
+</html>

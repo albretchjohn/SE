@@ -1,0 +1,64 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Faculty Dashboard</title>
+    <link rel="stylesheet" href="{% static 'css/dashboard_faculty_style.css' %}">
+</head>
+<body>
+    <div class="topbar">
+        <div class="search-bar">
+            <!-- search icon -->
+        </div>
+        <div class="icons">
+            <img src="{% static 'images/notification-icon.png' %}" alt="Notifications">
+            <img src="{% static 'images/profile-icon.png' %}" alt="Profile">
+        </div>
+    </div>
+    <div class="dashboard-container">
+        <div class="sidebar">
+            <div class="profile">
+                <img src="{% static 'images/profile-pic.png' %}" alt="Profile Picture">
+                <span>Department name</span>
+            </div>
+            <a href="#">My Profile</a>
+            <a href="#">Notification</a>
+            <a href="#">Printables</a>
+            <hr>
+            <a href="#">Settings</a>
+            <a href="#">Report</a>
+        </div>
+        <div class="content">
+            <form method="get" action="{% url 'dashboard_faculty_test' %}" class="search-form">
+                <input type="text" name="query" placeholder="Search by user name" required>
+                <button type="submit">Search</button>
+            </form>
+            {% if profiles %}
+            <h2>Wellness Users</h2>
+            <table class="wellness-table">
+                <thead>
+                    <tr>
+                        <th>Name</th>
+                        <th>Department</th>
+                        <th>Details</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for profile in profiles %}
+                    <tr>
+                        <td>{{ profile.first_name }} {{ profile.last_name }}</td>
+                        <td>{{ profile.college_department }}</td>
+                        <td><a href="{% url 'user_detail' profile.user.id %}">View Details</a></td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+            {% else %}
+            <p>No profiles found.</p>
+            {% endif %}
+        </div>
+    </div>
+</body>
+</html>

@@ -1,0 +1,67 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>User Dashboard</title>
+    <link rel="stylesheet" href="{% static 'css/user_dashboard.css' %}">
+</head>
+<body>
+    <a href="{% url 'logout' %}">Logout</a>
+    <div class="dashboard-container">
+        {% if messages %}
+            <div class="messages">
+                {% for message in messages %}
+                    <div class="message {{ message.tags }}">{{ message }}</div>
+                {% endfor %}
+            </div>
+        {% endif %}
+        
+        <h2>Welcome, {{ user_profile.first_name }}!</h2>
+        <p><strong>Weight:</strong> {{ user_profile.weight }} kg</p>
+        <p><strong>Height:</strong> {{ user_profile.height }} cm</p>
+        <p><strong>BMI:</strong> {{ user_profile.bmi }}</p>
+
+        {% if diet_plan and exercise_plan %}
+            <h3>Approved Diet Plan</h3>
+            <p><strong>Calorie Intake Per Day:</strong> {{ diet_plan.calorie_intake_per_day }} kcal</p>
+            <p><strong>Carbs Per Meal:</strong> {{ diet_plan.carbs_per_meal }} g</p>
+            <p><strong>Fats Per Meal:</strong> {{ diet_plan.fats_per_meal }} g</p>
+            <p><strong>Protein Per Meal:</strong> {{ diet_plan.protein_per_meal }} g</p>
+
+            <h3>Approved Exercise Plan</h3>
+            <div class="exercise-plan">
+                {% for day, exercises in exercise_plan.routine.items %}
+                    <h4>{{ day|capfirst }}</h4>
+                    <ul>
+                        {% for exercise in exercises %}
+                            <li>
+                                <strong>Name:</strong> {{ exercise.name }}<br>
+                                <strong>Duration:</strong> {{ exercise.duration }}<br>
+                                <strong>Reps:</strong> {{ exercise.reps }}<br>
+                                <strong>Sets:</strong> {{ exercise.sets }}
+                            </li>
+                        {% endfor %}
+                    </ul>
+                {% endfor %}
+            </div>
+        {% else %}
+            <h3>Your Personalized Plans</h3>
+            <p>Your personalized diet and exercise plans are still under review. Please check back later.</p>
+        {% endif %}
+    </div>
+
+    
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            setTimeout(function() {
+                const messages = document.querySelector('.messages');
+                if (messages) {
+                    messages.remove();
+                }
+            }, 1000);
+        });
+    </script>
+</body>
+</html>

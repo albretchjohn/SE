@@ -1,0 +1,49 @@
+/* resources_style.css */
+
+body {
+    font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 0;
+    background: url('/static/img/homepage_img2.png') no-repeat center center fixed;
+    background-size: cover;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+}
+
+.back-btn {
+    position: absolute;
+    top: 20px;
+    left: 20px;
+    background-color: #bd2a2a;
+    color:aliceblue;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-weight: bold;
+    margin-left: 40px;
+}
+
+.back-btn:hover {
+    background-color: #9b111e;
+}
+
+.res {
+    background-color: rgba(255, 253, 211, 0.9);
+    color: #333;
+    line-height: 1.6;
+    text-align: justify;
+    padding: 50px 20px;
+    border-radius: 10px;
+    max-width: 800px;
+    width: 90%;
+}
+
+.res h1 {
+    margin-bottom: 20px;
+    font-size: 80px;
+    font-weight: bold;
+}
+

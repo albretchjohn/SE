@@ -1,0 +1,49 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Display Plan</title>
+    <link rel="stylesheet" href="{% static 'css/display_plan_style.css' %}">
+</head>
+<body>
+    <div class="container">
+        <h1>Your Personalized Plan</h1>
+
+        <h2>Diet Plan</h2>
+        <p>Calorie Intake Per Day: {{ diet_plan.calorie_intake_per_day }}</p>
+        <p>Fats Per Meal: {{ diet_plan.fats_per_meal }}</p>
+        <p>Carbs Per Meal: {{ diet_plan.carbs_per_meal }}</p>
+        <p>Protein Per Meal: {{ diet_plan.protein_per_meal }}</p>
+
+        <h2>Exercise Plan</h2>
+        <h3>Strength Exercises</h3>
+        <p>{{ exercise_plan.strength_exercises }}</p>
+
+        <h3>Flexibility Exercises</h3>
+        <p>{{ exercise_plan.flexibility_exercises }}</p>
+
+        <h3>Cardio Exercises</h3>
+        <p>{{ exercise_plan.cardio_exercises }}</p>
+
+        <h3>Weekly Routine</h3>
+        <ul>
+            {% for day, exercises in exercise_plan.routine.items %}
+                <li><strong>{{ day }}:</strong>
+                    <ul>
+                        {% for exercise in exercises %}
+                            <li>{{ exercise.name }} - Duration: {{ exercise.duration }}, Reps: {{ exercise.reps }}, Sets: {{ exercise.sets }}</li>
+                        {% endfor %}
+                    </ul>
+                </li>
+            {% endfor %}
+        </ul>
+
+        <form method="post">
+            {% csrf_token %}
+            <button type="submit">Submit Plan</button>
+        </form>
+    </div>
+</body>
+</html>
