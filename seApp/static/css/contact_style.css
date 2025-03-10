@@ -59,8 +59,8 @@ body {
 }
 
 .contact-form .btn {
-    background-color: #ffcc00; /* Button background color */
-    color: #333; /* Button text color */
+    background-color: #ffcc00; 
+    color: #333; 
     padding: 10px 20px;
     text-decoration: none;
     font-weight: bold;
@@ -70,5 +70,5 @@ body {
 }
 
 .contact-form .btn:hover {
-    background-color: #ff9933; /* Button hover color */
+    background-color: #ff9933; 
 }

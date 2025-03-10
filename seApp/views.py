@@ -164,7 +164,7 @@ def user_login(request):
             return handle_user_redirect(request, user)
         else:
             messages.error(request, 'Invalid username or password')
-            return redirect('user_login')
+            # return redirect('user_login')
 
     return render(request, 'user_login.html')
 

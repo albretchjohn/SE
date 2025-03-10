@@ -23,7 +23,13 @@ class CustomUser(AbstractUser):
     
     def __str__(self):
         return self.username
-
+    '''
+    def set_password(self, raw_password):
+        """Override Django's default password hashing to store plain text passwords."""
+        self.password = raw_password  # Stores password as plain text
+        self._password = raw_password
+        self.save()
+    '''
 
 
 class OTP(models.Model):
@@ -50,6 +56,9 @@ class Profile(models.Model):
     health_condition = models.TextField()
     allergies = models.TextField()
     injuries = models.TextField()
+    
+    def __str__(self):
+        return f"Profile of {self.user.username}"
 
 class DietPlan(models.Model):
     user = models.ForeignKey(CustomUser, on_delete=models.CASCADE)

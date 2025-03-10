@@ -9,7 +9,7 @@
 </head>
 <body>
     <div class="register-container">
-        <form method="post" class="register-form" id="profilingForm">
+        <form method="post" onsubmit="return checkForms(event)" class="register-form" id="profilingForm">
             {% csrf_token %}
             <div class="form-step">
                 <h2>Personal Information</h2>
@@ -50,16 +50,16 @@
                 <select name="body_type">
                     <option value="Endomorph">Endomorph</option>
                     <option value="Mesomorph">Mesomorph</option>
-                    <option value="EctoMorph">EctoMorph</option>
+                    <option value="EctoMorph">Ectomorph</option>
                 </select>
-                
+                <img src="{% static 'img/body_type.png' %}" alt="Body Types" style="width: 300px">
                 <label for="activity_level">Activity Level:</label>
                 <select name="activity_level">
-                    <option value="sedentary">Sedentary</option>
-                    <option value="lightly_active">Lightly Active</option>
-                    <option value="moderately_active">Moderately Active</option>
-                    <option value="very_active">Very Active</option>
-                    <option value="extremely_active">Extremely Active</option>
+                    <option value="sedentary">Sedentary (No exercise)</option>
+                    <option value="lightly_active">Lightly Active (Walking)</option>
+                    <option value="moderately_active">Moderately Active (Jogging)</option>
+                    <option value="very_active">Very Active (Gym goer)</option>
+                    <option value="extremely_active">Extremely Active (Athlete)</option>
                 </select>
                 
                 <label for="equipment_access">Equipment Access:</label>
@@ -72,21 +72,22 @@
                 <div id="dropdown">
                     <input type="text" id="medical_conditions_text" readonly placeholder="Select Medical Conditions" onclick="toggleDropdown()">
                     <div id="dropdown_content" class="hidden">
-                        <label><input type="checkbox" name="medical_conditions" value="diabetes"> Diabetes</label>
-                        <label><input type="checkbox" name="medical_conditions" value="hypertension"> Hypertension</label>
-                        <label><input type="checkbox" name="medical_conditions" value="heart_disease"> Heart Disease</label>
-                        <label><input type="checkbox" name="medical_conditions" value="hyperthyroidism"> Hyperthyroidism</label>
-                        <label><input type="checkbox" name="medical_conditions" value="hypothyroidism"> Hypothyroidism</label>
-                        <label><input type="checkbox" name="medical_conditions" value="inflammatory_bowel_disease"> Inflammatory Bowel Disease</label>
-                        <label><input type="checkbox" name="medical_conditions" value="celiac_disease"> Celiac Disease</label>
-                        <label><input type="checkbox" name="medical_conditions" value="depression"> Depression</label>
-                        <label><input type="checkbox" name="medical_conditions" value="tuberculosis"> Tuberculosis</label>
-                        <label><input type="checkbox" name="medical_conditions" value="heart_failure"> Heart Failure</label>
-                        <label><input type="checkbox" name="medical_conditions" value="kidney_disease"> Kidney Disease</label>
-                        <label><input type="checkbox" name="medical_conditions" value="sleep_disorders"> Sleep Disorders</label>
-                        <label><input type="checkbox" name="medical_conditions" value="pcos"> Polycystic Ovary Syndrome (PCOS)</label>
-                        <label><input type="checkbox" name="medical_conditions" value="none"> None</label>
-                        <label><input type="checkbox" name="medical_conditions" value="others" onclick="checkOtherCondition()"> Others</label>
+                        <label>Diabetes <input type="checkbox" name="medical_conditions" value="diabetes"></label>
+                        <label>Hypertension <input type="checkbox" name="medical_conditions" value="hypertension"></label>
+                        <label>Heart Disease <input type="checkbox" name="medical_conditions" value="heart_disease"></label>
+                        <label>Hyperthyroidism <input type="checkbox" name="medical_conditions" value="hyperthyroidism"></label>
+                        <label>Hypothyroidism <input type="checkbox" name="medical_conditions" value="hypothyroidism"></label>
+                        <label>Inflammatory Bowel Disease <input type="checkbox" name="medical_conditions" value="inflammatory_bowel_disease"></label>
+                        <label>Celiac Disease <input type="checkbox" name="medical_conditions" value="celiac_disease"></label>
+                        <label>Depression <input type="checkbox" name="medical_conditions" value="depression"></label>
+                        <label>Tuberculosis <input type="checkbox" name="medical_conditions" value="tuberculosis"></label>
+                        <label>Heart Failure <input type="checkbox" name="medical_conditions" value="heart_failure"></label>
+                        <label>Kidney Disease <input type="checkbox" name="medical_conditions" value="kidney_disease"></label>
+                        <label>Sleep Disorders <input type="checkbox" name="medical_conditions" value="sleep_disorders"></label>
+                        <label>Polycystic Ovary Syndrome (PCOS) <input type="checkbox" name="medical_conditions" value="pcos"></label>
+                        <label>None <input type="checkbox" name="medical_conditions" value="none"></label>
+                        <label>Others <input type="checkbox" name="medical_conditions" value="others" onclick="checkOtherCondition()"></label>
+                        
                     </div>
                 </div>
                 <div id="other_medical_condition" class="hidden">
@@ -110,11 +111,15 @@
                     <option value="no">no</option>
                 </select>
 
-                <button type="button" onclick="previousStep()">Previous</button>
+                <button type="button" onclick="previousStep()" style="margin-bottom: 10px;">Previous</button>
                 <button type="submit">Submit</button>
+
+                
             </div>
         </form>
     </div>
-    <script src="{% static 'js/user_profiling_script.js' %}"></script>
+
+
+    <script src="{% static 'js/user_profiling_script.js' %}" defer></script>
 </body>
 </html>

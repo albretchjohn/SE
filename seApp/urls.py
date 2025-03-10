@@ -2,6 +2,7 @@ from django.urls import path
 from .views import register_user, home, contact, user_login, logout_view, resources, about, verify_otp, user_dashboard, profiling, faculty_dashboard, the_admin, generate_plan, display_plan, view_exercise_plans, register_faculty, dashboard_faculty_test, user_detail, csspe_dashboard, he_dashboard, resend_otp, user_view_details, user_view_details_d
 
 urlpatterns = [
+    path('', home, name='home'),
     path('home/', home, name='home'),
     path('register/', register_user, name='register_user'),
     path('resend-otp/', resend_otp, name='resend_otp'),
