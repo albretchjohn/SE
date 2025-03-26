@@ -4,7 +4,7 @@ from django.contrib.auth.decorators import login_required, user_passes_test
 from django.contrib.auth import get_user_model
 from django.contrib import messages
 from django.core.mail import send_mail
-from .models import OTP, CustomUser, Profile, DietPlan, ExercisePlan, Faculty, E_PlanApproval, D_PlanApproval
+from .models import OTP, CustomUser, Profile, DietPlan, ExercisePlan, Faculty, E_PlanApproval, D_PlanApproval, WeightEntry
 from django.utils import timezone
 from datetime import datetime
 from .exercise_data import strength_exercises, cardio_exercises, flexibility_exercises 
@@ -434,12 +434,24 @@ def user_dashboard(request):
         
         diet_plan = DietPlan.objects.filter(user=request.user, status='Approved').first()
         exercise_plan = ExercisePlan.objects.filter(user=request.user, status='Approved').first()
+        
+        weight_entries = WeightEntry.objects.filter(user=request.user).order_by("-date_logged") #comments to ng user
+        
+        
+        chart_entries = WeightEntry.objects.filter(user=request.user).order_by("date_logged")
+        dates = [entry.date_logged.strftime("%Y-%m-%d") for entry in chart_entries]
+        weights = [entry.weight for entry in chart_entries]
+        
+
 
         if diet_plan and exercise_plan:
             return render(request, 'user_dashboard.html', {
                 'user_profile': user_profile,
                 'diet_plan': diet_plan,
-                'exercise_plan': exercise_plan
+                'exercise_plan': exercise_plan,
+                'weights': weights,
+                'dates': dates,
+                'comments': weight_entries,
             })
         else:
             messages.info(request, 'Your personalized plans are still under review. Please come again later.')
@@ -504,6 +516,14 @@ def user_view_details(request, user_id):
     user_profile = get_object_or_404(Profile, user_id=user_id)
     exercise_plan = get_object_or_404(ExercisePlan, user_id=user_id)
     diet_plan = DietPlan.objects.filter(user_id=user_id, status='Approved').first()
+    
+    user = user_profile.user
+    comments = WeightEntry.objects.filter(user=user).order_by("-date_logged")
+    
+    chart_entries = WeightEntry.objects.filter(user=user).order_by("date_logged")
+    dates = [entry.date_logged.strftime("%Y-%m-%d") for entry in chart_entries]
+    weights = [entry.weight for entry in chart_entries]
+    
 
     if request.method == 'POST':
         try:
@@ -534,7 +554,11 @@ def user_view_details(request, user_id):
         'user_profile': user_profile,
         'exercise_plan': exercise_plan,
         'diet_plan': diet_plan,
-        'approved_by': exercise_plan.reviewed_by_fullname_csspe
+        'approved_by': exercise_plan.reviewed_by_fullname_csspe,
+        'comments': comments,
+        'dates': dates,
+        'weights': weights,
+        
     })
 
 
@@ -543,6 +567,14 @@ def user_view_details(request, user_id):
 def user_view_details_d(request, user_id):
     user_profile = get_object_or_404(Profile, user_id=user_id)
     diet_plan = get_object_or_404(DietPlan, user_id=user_id)
+    
+    user = user_profile.user
+    comments = WeightEntry.objects.filter(user=user).order_by("-date_logged")
+    
+    chart_entries = WeightEntry.objects.filter(user=user).order_by("date_logged")
+    dates = [entry.date_logged.strftime("%Y-%m-%d") for entry in chart_entries]
+    weights = [entry.weight for entry in chart_entries]
+    
 
     if request.method == 'POST':
         diet_plan.calorie_intake_per_day = request.POST['calorie_intake_per_day']
@@ -567,8 +599,27 @@ def user_view_details_d(request, user_id):
     return render(request, 'user_view_details_d.html', {
         'user_profile': user_profile,
         'diet_plan': diet_plan,
-        'approved_by': diet_plan.reviewed_by_fullname_he
+        'approved_by': diet_plan.reviewed_by_fullname_he,
+        'comments': comments,
+        'dates': dates,
+        'weights': weights
     })
+    
+@login_required
+def submit_progress(request):
+    if request.method == "POST":
+        weight = request.POST.get('current_weight')
+        comment = request.POST.get('comments')
+
+        if weight:
+            WeightEntry.objects.create(
+                user=request.user,
+                weight=weight,
+                comment=comment
+            )
+        return redirect('user_dashboard')  # or wherever you want to redirect after saving
+
+    return redirect('user_dashboard')  # fallback if accessed via GET
 
 
 

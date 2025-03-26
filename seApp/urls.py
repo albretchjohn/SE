@@ -1,5 +1,6 @@
 from django.urls import path
 from .views import register_user, home, contact, user_login, logout_view, resources, about, verify_otp, user_dashboard, profiling, faculty_dashboard, the_admin, generate_plan, display_plan, view_exercise_plans, register_faculty, dashboard_faculty_test, user_detail, csspe_dashboard, he_dashboard, resend_otp, user_view_details, user_view_details_d
+from . import views
 
 urlpatterns = [
     path('', home, name='home'),
@@ -26,5 +27,6 @@ urlpatterns = [
     path('he/', he_dashboard, name='he_dashboard'),
     path('View-Details/<int:user_id>/',user_view_details, name='user_view_details'),
     path('User-View-Details-d/<int:user_id>/',user_view_details_d, name='user_view_details_d'),
+    path('submit-progress/', views.submit_progress, name='submit_progress'), 
 
 ]
