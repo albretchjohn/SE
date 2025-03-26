@@ -11,6 +11,8 @@ from .exercise_data import strength_exercises, cardio_exercises, flexibility_exe
 import random
 from django.db.models import Q
 
+# User = get_user_model()
+
 #to home/landing page
 def home (request):
     return render (request, 'home.html')
@@ -198,22 +200,30 @@ def csspe_dashboard(request):
             Q(first_name__icontains=search_query) |
             Q(last_name__icontains=search_query)
         )
-        return render(request, 'csspe_dashboard.html', {'users': users})
+    else:
+        # Show all users by default when loading the page
+        users = Profile.objects.all()
+        
+    return render(request, 'csspe_dashboard.html', {'users': users})
 
-    return render(request, 'csspe_dashboard.html', {'users': []})
+    # return render(request, 'csspe_dashboard.html', {'users': []})
 
 
 # interface for he members
 @login_required
 def he_dashboard(request):
-     if request.method == 'POST':
+    if request.method == 'POST':
         search_query = request.POST.get('search_query', '')
         users = Profile.objects.filter(
             Q(first_name__icontains=search_query) |
             Q(last_name__icontains=search_query)
         )
-        return render(request, 'he_dashboard.html', {'users': users})
-     return render(request, 'he_dashboard.html', {'users': []})
+    else:
+        users = Profile.objects.all()
+    
+    
+    return render(request, 'he_dashboard.html', {'users': users})
+    #  return render(request, 'he_dashboard.html', {'users': []})
 
 #after registering wellness user/ function for getting their info
 def profiling(request):
@@ -489,6 +499,8 @@ def view_exercise_plans(request):
 #function for  csspe faculty to do CRUD
 @login_required
 def user_view_details(request, user_id):
+    # approved_by = f"{request.user.first_name} {request.user.last_name}"
+    
     user_profile = get_object_or_404(Profile, user_id=user_id)
     exercise_plan = get_object_or_404(ExercisePlan, user_id=user_id)
     diet_plan = DietPlan.objects.filter(user_id=user_id, status='Approved').first()
@@ -501,6 +513,7 @@ def user_view_details(request, user_id):
             exercise_plan.routine = request.POST.get('routine', exercise_plan.routine)
             exercise_plan.rest_day = request.POST.get('rest_day', exercise_plan.rest_day)
             exercise_plan.status = request.POST.get('status', exercise_plan.status)
+            exercise_plan.reviewed_by_fullname_csspe = request.user.get_full_name()
             exercise_plan.save()
 
             faculty = Faculty.objects.get(email=request.user.email)
@@ -520,7 +533,8 @@ def user_view_details(request, user_id):
     return render(request, 'user_view_details.html', {
         'user_profile': user_profile,
         'exercise_plan': exercise_plan,
-        'diet_plan': diet_plan
+        'diet_plan': diet_plan,
+        'approved_by': exercise_plan.reviewed_by_fullname_csspe
     })
 
 
@@ -536,6 +550,7 @@ def user_view_details_d(request, user_id):
         diet_plan.fats_per_meal = request.POST['fats_per_meal']
         diet_plan.protein_per_meal = request.POST['protein_per_meal']
         diet_plan.status = request.POST['status']
+        diet_plan.reviewed_by_fullname_he = request.user.get_full_name()
         diet_plan.save()
 
         faculty = Faculty.objects.get(email=request.user.email)
@@ -551,7 +566,8 @@ def user_view_details_d(request, user_id):
 
     return render(request, 'user_view_details_d.html', {
         'user_profile': user_profile,
-        'diet_plan': diet_plan
+        'diet_plan': diet_plan,
+        'approved_by': diet_plan.reviewed_by_fullname_he
     })
 
 

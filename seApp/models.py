@@ -68,6 +68,7 @@ class DietPlan(models.Model):
     protein_per_meal = models.FloatField()
     date_created = models.DateTimeField(auto_now_add=True)
     status = models.CharField(max_length=20, default='Pending')
+    reviewed_by_fullname_he = models.CharField(max_length=255, null=True, blank=True)
 
     def __str__(self): 
         return f"{self.user.username}'s Exercise Plan"
@@ -85,6 +86,8 @@ class ExercisePlan(models.Model):
     rest_day = models.CharField(max_length=10)
     date_created = models.DateTimeField(auto_now_add=True)
     status = models.CharField(max_length=20, default='Pending')
+    reviewed_by_fullname_csspe = models.CharField(max_length=255, null=True, blank=True)
+    reviewed_by_fullname_he = models.CharField(max_length=255, null=True, blank=True)
 
     def __str__(self):
         return f"{self.user.username}'s Exercise Plan"

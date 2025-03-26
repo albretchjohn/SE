@@ -6,53 +6,91 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>User Dashboard</title>
     <link rel="stylesheet" href="{% static 'css/user_dashboard.css' %}">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
 </head>
-<body>
-    <a href="{% url 'logout' %}">Logout</a>
-    <div class="dashboard-container">
-        {% if messages %}
-            <div class="messages">
-                {% for message in messages %}
-                    <div class="message {{ message.tags }}">{{ message }}</div>
-                {% endfor %}
+<body class="bg-light">
+    <div class="container mt-4">
+  
+      <!-- Logout Button -->
+      <div class="d-flex justify-content-end mb-3">
+        <a href="{% url 'logout' %}" class="btn btn-outline-danger">Logout</a>
+      </div>
+  
+      <!-- Messages -->
+      {% if messages %}
+        <div class="mb-3">
+          {% for message in messages %}
+            <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
+              {{ message }}
+              <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
             </div>
-        {% endif %}
-        
-        <h2>Welcome, {{ user_profile.first_name }}!</h2>
-        <p><strong>Weight:</strong> {{ user_profile.weight }} kg</p>
-        <p><strong>Height:</strong> {{ user_profile.height }} cm</p>
-        <p><strong>BMI:</strong> {{ user_profile.bmi }}</p>
-
-        {% if diet_plan and exercise_plan %}
-            <h3>Approved Diet Plan</h3>
+          {% endfor %}
+        </div>
+      {% endif %}
+  
+      <!-- Welcome Section -->
+      <div class="card shadow mb-4">
+        <div class="card-body">
+          <h2 class="card-title mb-3">Welcome, {{ user_profile.first_name }}!</h2>
+          <p><strong>Weight:</strong> {{ user_profile.weight }} kg</p>
+          <p><strong>Height:</strong> {{ user_profile.height }} cm</p>
+          <p><strong>BMI:</strong> {{ user_profile.bmi }}</p>
+        </div>
+      </div>
+  
+      {% if diet_plan and exercise_plan %}
+        <!-- Diet Plan Card -->
+        <div class="card shadow mb-4">
+          <div class="card-header bg-success text-white">
+            <h4 class="mb-0">🍽️ Approved Diet Plan</h4>
+          </div>
+          <div class="card-body">
             <p><strong>Calorie Intake Per Day:</strong> {{ diet_plan.calorie_intake_per_day }} kcal</p>
             <p><strong>Carbs Per Meal:</strong> {{ diet_plan.carbs_per_meal }} g</p>
             <p><strong>Fats Per Meal:</strong> {{ diet_plan.fats_per_meal }} g</p>
             <p><strong>Protein Per Meal:</strong> {{ diet_plan.protein_per_meal }} g</p>
-
-            <h3>Approved Exercise Plan</h3>
-            <div class="exercise-plan">
+            <p><strong>Dietitian:</strong> {{ diet_plan.reviewed_by_fullname_he }} </p>
+          </div>
+        </div>
+  
+        <!-- Exercise Plan Accordion -->
+        <div class="accordion shadow mb-4" id="exerciseAccordion">
+          <div class="accordion-item">
+            <h2 class="accordion-header" id="exerciseHeading">
+              <button class="accordion-button bg-primary text-white" type="button" data-bs-toggle="collapse" data-bs-target="#exerciseCollapse" aria-expanded="true" aria-controls="exerciseCollapse">
+                🏋️ Approved Exercise Plan
+              </button>
+            </h2>
+            <div id="exerciseCollapse" class="accordion-collapse collapse show" aria-labelledby="exerciseHeading">
+              <div class="accordion-body">
                 {% for day, exercises in exercise_plan.routine.items %}
-                    <h4>{{ day|capfirst }}</h4>
-                    <ul>
-                        {% for exercise in exercises %}
-                            <li>
-                                <strong>Name:</strong> {{ exercise.name }}<br>
-                                <strong>Duration:</strong> {{ exercise.duration }}<br>
-                                <strong>Reps:</strong> {{ exercise.reps }}<br>
-                                <strong>Sets:</strong> {{ exercise.sets }}
-                            </li>
-                        {% endfor %}
-                    </ul>
+                  <h5 class="mt-3">{{ day|capfirst }}</h5>
+                  <ul class="list-group mb-3">
+                    {% for exercise in exercises %}
+                      <li class="list-group-item">
+                        <strong>Name:</strong> {{ exercise.name }}<br>
+                        <strong>Duration:</strong> {{ exercise.duration }}<br>
+                        <strong>Reps:</strong> {{ exercise.reps }}<br>
+                        <strong>Sets:</strong> {{ exercise.sets }}
+                      </li>
+                    {% endfor %}
+                  </ul>
                 {% endfor %}
+                <p><strong>Trainer:</strong> {{ exercise_plan.reviewed_by_fullname_csspe }} </p>
+              </div>
             </div>
-        {% else %}
-            <h3>Your Personalized Plans</h3>
-            <p>Your personalized diet and exercise plans are still under review. Please check back later.</p>
-        {% endif %}
+          </div>
+        </div>
+  
+      {% else %}
+        <!-- No Plan Yet -->
+        <div class="alert alert-warning mt-4" role="alert">
+          <h4 class="alert-heading">Your Personalized Plans</h4>
+          <p>Your personalized diet and exercise plans are still under review. Please check back later.</p>
+        </div>
+      {% endif %}
     </div>
 
-    
     <script>
         document.addEventListener('DOMContentLoaded', function() {
             setTimeout(function() {
@@ -63,5 +101,8 @@
             }, 1000);
         });
     </script>
-</body>
+  
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
+  </body>
+  
 </html>
