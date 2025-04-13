@@ -147,47 +147,52 @@
           </script>
           
         
-        <div class="container my-5">
-            <h2 class="mb-4 text-center">Exercise Plan</h2>
-            <form method="post" class="bg-light p-4 rounded shadow">
-              {% csrf_token %}
-          
-              <div class="accordion" id="exerciseAccordion">
-                {% for day, exercises in exercise_plan.routine.items %}
-                <div class="accordion-item">
-                  <h2 class="accordion-header" id="heading{{ forloop.counter }}">
-                    <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapse{{ forloop.counter }}" aria-expanded="false" aria-controls="collapse{{ forloop.counter }}">
-                      {{ day|capfirst }}
-                    </button>
-                  </h2>
-                  <div id="collapse{{ forloop.counter }}" class="accordion-collapse collapse" aria-labelledby="heading{{ forloop.counter }}" data-bs-parent="#exerciseAccordion">
-                    <div class="accordion-body">
-                      {% for exercise in exercises %}
-                        <div class="row g-3 mb-3">
-                          <div class="col-md-6">
-                            <label class="form-label">Exercise Name</label>
-                            <input type="text" class="form-control" name="routine[{{ day }}][{{ forloop.counter0 }}][name]" value="{{ exercise.name }}">
+          <div class="container my-5">
+              <h2 class="mb-4 text-center">Exercise Plan</h2>
+              <form method="post" class="bg-light p-4 rounded shadow">
+                {% csrf_token %}
+            
+                <div class="accordion" id="exerciseAccordion">
+                  {% for day, exercises in exercise_plan.routine.items %}
+                  <div class="accordion-item">
+                    <h2 class="accordion-header" id="heading{{ forloop.counter }}">
+                      <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapse{{ forloop.counter }}" aria-expanded="false" aria-controls="collapse{{ forloop.counter }}">
+                        {{ day|capfirst }}
+                      </button>
+                    </h2>
+                    <div id="collapse{{ forloop.counter }}" class="accordion-collapse collapse" aria-labelledby="heading{{ forloop.counter }}" data-bs-parent="#exerciseAccordion">
+                      <div class="accordion-body">
+                        {% for exercise in exercises %}
+                          <div class="row g-3 mb-3">
+                            <div class="col-md-6">
+                              <label class="form-label">Exercise Name</label>
+                              <input type="text" class="form-control" name="routine[{{ day }}][{{ forloop.counter0 }}][name]" value="{{ exercise.name }}">
+                            </div>
+                            <div class="col-md-6">
+                              <label class="form-label">Duration</label>
+                              <input type="text" class="form-control" name="routine[{{ day }}][{{ forloop.counter0 }}][duration]" value="{{ exercise.duration }}">
+                            </div>
+                            <div class="col-md-6">
+                              <label class="form-label">Reps</label>
+                              <input type="number" class="form-control" name="routine[{{ day }}][{{ forloop.counter0 }}][reps]" value="{{ exercise.reps }}">
+                            </div>
+                            <div class="col-md-6">
+                              <label class="form-label">Sets</label>
+                              <input type="number" class="form-control" name="routine[{{ day }}][{{ forloop.counter0 }}][sets]" value="{{ exercise.sets }}">
+                            </div>
                           </div>
-                          <div class="col-md-6">
-                            <label class="form-label">Duration</label>
-                            <input type="text" class="form-control" name="routine[{{ day }}][{{ forloop.counter0 }}][duration]" value="{{ exercise.duration }}">
-                          </div>
-                          <div class="col-md-6">
-                            <label class="form-label">Reps</label>
-                            <input type="number" class="form-control" name="routine[{{ day }}][{{ forloop.counter0 }}][reps]" value="{{ exercise.reps }}">
-                          </div>
-                          <div class="col-md-6">
-                            <label class="form-label">Sets</label>
-                            <input type="number" class="form-control" name="routine[{{ day }}][{{ forloop.counter0 }}][sets]" value="{{ exercise.sets }}">
-                          </div>
-                        </div>
-                      {% endfor %}
+                        {% endfor %}
+                      </div>
                     </div>
                   </div>
+                  {% endfor %}
                 </div>
-                {% endfor %}
-              </div>
-          
+            
+
+
+
+
+            
               <div class="mt-4">
                 <label class="form-label">Status</label>
                 <select class="form-select" name="status">
@@ -208,9 +213,14 @@
               </div>
             </form>
           </div>
+        
 
           
           
+
+
+
+
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
 
