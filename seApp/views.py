@@ -94,13 +94,42 @@ def register_user(request):
     return render(request, 'register_user.html')
 
 #only admin has access/registers faculty members
-@login_required
-@user_passes_test(lambda u: u.user_type == 'Admin')
-def register_faculty(request):
-    if request.user.user_type != 'Admin': 
-        messages.error(request, 'You do not have permission to register a faculty member.')
-        return redirect('home')
+# @login_required
+# @user_passes_test(lambda u: u.user_type == 'Admin')
+# def register_faculty(request):
+#     if request.user.user_type != 'Admin': 
+#         messages.error(request, 'You do not have permission to register a faculty member.')
+#         return redirect('home')
     
+#     if request.method == 'POST':
+#         username = request.POST['username']
+#         first_name = request.POST['first_name']
+#         last_name = request.POST['last_name']
+#         email = request.POST['email']
+#         password = request.POST['password']
+#         department = request.POST['department']
+
+#         user = CustomUser.objects.create_user(
+#             username=username, 
+#             first_name=first_name, 
+#             last_name=last_name, 
+#             email=email, 
+#             password=password, 
+#             user_type='faculty',
+#             is_staff=True
+#         )
+#         user.is_active = True
+#         user.save()
+        
+#         Faculty.objects.create(name=f"{first_name} {last_name}", email=email, department=department)
+
+#         messages.success(request, 'Faculty registered successfully.')
+#         return redirect('admin_interface')
+
+#     return render(request, 'faculty_register.html')
+
+@login_required
+def register_faculty(request):
     if request.method == 'POST':
         username = request.POST['username']
         first_name = request.POST['first_name']
