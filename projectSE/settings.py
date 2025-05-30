@@ -93,7 +93,7 @@ DATABASES = {
         'NAME': 'wmsuwellness',
         'USER': 'root',
         'PASSWORD': '0fKL32ZbvS13uvxC7S0ANf7q87aDiiAO',
-        'HOST': 'dpg-d0sovf95pdvs738vm110-a',
+        'HOST': 'dpg-d0sovf95pdvs738vm110-a.oregon-postgres.render.com',
         'PORT': '5432',
     }
 }
