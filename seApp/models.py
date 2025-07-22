@@ -80,6 +80,12 @@ class DietPlan(models.Model):
 
 class ExercisePlan(models.Model):
     user = models.ForeignKey(CustomUser, on_delete=models.CASCADE)
+    first_day = models.TextField(null=True, blank=True)
+    second_day = models.TextField(null=True, blank=True)
+    third_day = models.TextField(null=True, blank=True)
+    fourth_day = models.TextField(null=True, blank=True)
+    fifth_day = models.TextField(null=True, blank=True)
+    sixth_day = models.TextField(null=True, blank=True)
     strength_exercises = models.TextField()
     flexibility_exercises = models.TextField()
     cardio_exercises = models.TextField()

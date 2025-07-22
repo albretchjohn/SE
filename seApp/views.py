@@ -128,7 +128,7 @@ def register_user(request):
 
 #     return render(request, 'faculty_register.html')
 
-@login_required
+# @login_required
 def register_faculty(request):
     if request.method == 'POST':
         username = request.POST['username']
@@ -471,7 +471,13 @@ def user_dashboard(request):
         dates = [entry.date_logged.strftime("%Y-%m-%d") for entry in chart_entries]
         weights = [entry.weight for entry in chart_entries]
         
-
+        dietitianComment = None
+        if diet_plan:
+            dietitianComment = D_PlanApproval.objects.filter(D_plan=diet_plan).order_by("-review_date").first()
+            
+        trainerComment = None
+        if exercise_plan:
+            trainerComment = E_PlanApproval.objects.filter(E_plan=exercise_plan).order_by("-review_date").first()
 
         if diet_plan and exercise_plan:
             return render(request, 'user_dashboard.html', {
@@ -481,6 +487,8 @@ def user_dashboard(request):
                 'weights': weights,
                 'dates': dates,
                 'comments': weight_entries,
+                'dietitianComment': dietitianComment,
+                'trainerComment': trainerComment,
             })
         else:
             messages.info(request, 'Your personalized plans are still under review. Please come again later.')
@@ -488,7 +496,8 @@ def user_dashboard(request):
         return render(request, 'user_dashboard.html', {
             'user_profile': user_profile,
             'diet_plan': diet_plan,
-            'exercise_plan': exercise_plan
+            'exercise_plan': exercise_plan,
+            
         })
     except Profile.DoesNotExist:
         messages.error(request, 'Profile not found.')
@@ -559,7 +568,28 @@ def user_view_details(request, user_id):
             exercise_plan.strength_exercises = request.POST.get('strength_exercises', exercise_plan.strength_exercises)
             exercise_plan.flexibility_exercises = request.POST.get('flexibility_exercises', exercise_plan.flexibility_exercises)
             exercise_plan.cardio_exercises = request.POST.get('cardio_exercises', exercise_plan.cardio_exercises)
-            exercise_plan.routine = request.POST.get('routine', exercise_plan.routine)
+            # exercise_plan.routine = request.POST.get('routine', exercise_plan.routine)
+            routine_dict = {}
+            for day in range(1, 8):
+                exercises = []
+                i = 0
+                while True:
+                    name = request.POST.get(f'routine[day_{day}][{i}][name]')
+                    duration = request.POST.get(f'routine[day_{day}][{i}][duration]')
+                    reps = request.POST.get(f'routine[day_{day}][{i}][reps]')
+                    sets = request.POST.get(f'routine[day_{day}][{i}][sets]')
+                    if not name:
+                        break
+                    exercises.append({
+                        'name': name,
+                        'duration': duration or '',
+                        'reps': reps or '',
+                        'sets': sets or '',
+                    })
+                    i += 1
+                routine_dict[f'day_{day}'] = exercises
+            
+            exercise_plan.routine = routine_dict
             exercise_plan.rest_day = request.POST.get('rest_day', exercise_plan.rest_day)
             exercise_plan.status = request.POST.get('status', exercise_plan.status)
             exercise_plan.reviewed_by_fullname_csspe = request.user.get_full_name()
@@ -599,6 +629,7 @@ def user_view_details_d(request, user_id):
     
     user = user_profile.user
     comments = WeightEntry.objects.filter(user=user).order_by("-date_logged")
+    # dietitianComment = D_PlanApproval.objects.filter(D_plan__user=user).order_by("-review_date").first()
     
     chart_entries = WeightEntry.objects.filter(user=user).order_by("date_logged")
     dates = [entry.date_logged.strftime("%Y-%m-%d") for entry in chart_entries]
@@ -631,7 +662,8 @@ def user_view_details_d(request, user_id):
         'approved_by': diet_plan.reviewed_by_fullname_he,
         'comments': comments,
         'dates': dates,
-        'weights': weights
+        'weights': weights,
+        # 'dietitianComment': dietitianComment
     })
     
 @login_required

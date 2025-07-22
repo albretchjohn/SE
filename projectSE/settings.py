@@ -79,6 +79,20 @@ WSGI_APPLICATION = 'projectSE.wsgi.application'
 # DATABASES = {
 #     'default': {
 #         'ENGINE': 'django.db.backends.mysql',
+#         'NAME': 'se_test',
+#         'USER': 'root',  
+#         'PASSWORD': '',  
+#         'HOST': 'localhost',
+#         'PORT': '3306',
+#     }
+# }
+
+# Database
+# https://docs.djangoproject.com/en/5.1/ref/settings/#databases
+
+# DATABASES = {
+#     'default': {
+#         'ENGINE': 'django.db.backends.mysql',
 #         'NAME': 'db_se',
 #         'USER': 'root',  
 #         'PASSWORD': '',  
@@ -87,19 +101,35 @@ WSGI_APPLICATION = 'projectSE.wsgi.application'
 #     }
 # }
 
+# DATABASES = {
+#     'default': {
+#         'ENGINE': 'django.db.backends.postgresql',
+#         'NAME': 'wmsuwellness',
+#         'USER': 'root',
+#         'PASSWORD': '0fKL32ZbvS13uvxC7S0ANf7q87aDiiAO',
+#         'HOST': 'dpg-d0sovf95pdvs738vm110-a.oregon-postgres.render.com',
+#         'PORT': '5432',
+#         'OPTIONS': {
+#             'options': '-c search_path=db_se,public'
+#         }
+#     }
+# }
+
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql',
-        'NAME': 'wmsuwellness',
-        'USER': 'root',
-        'PASSWORD': '0fKL32ZbvS13uvxC7S0ANf7q87aDiiAO',
-        'HOST': 'dpg-d0sovf95pdvs738vm110-a.oregon-postgres.render.com',
+        'NAME': 'wmsuwellness_9u0m',
+        'USER': 'wmsuwellness_9u0m_user',
+        'PASSWORD': 'uQGXMunNTMv0keabHtpdTekJXRmIquiq',
+        'HOST': 'dpg-d1h9oa21l9vc73bh5vdg-a.oregon-postgres.render.com',
         'PORT': '5432',
         'OPTIONS': {
+            # 'sslmode': 'require',
             'options': '-c search_path=db_se,public'
         }
     }
 }
+
 
 
 

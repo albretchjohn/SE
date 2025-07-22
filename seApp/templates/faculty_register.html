@@ -15,7 +15,13 @@
             <input type="text" name="username" placeholder="Username" required>
             <input type="text" name="first_name" placeholder="First Name" required>
             <input type="text" name="last_name" placeholder="Last Name" required>
-            <input type="text" name="department" placeholder="Department (e.g., College of Computing Studies)" required>
+            {% comment %} <label for="department">Department</label> {% endcomment %}
+            <select name="department" placeholder="Department" required>
+                <option value="" disabled selected>Select Your Department</option>
+                <option value="college of sports science and physical education">College of Sports Science and Physical Education</option>
+                <option value="college of home economics">College of Home Economics</option>
+            </select>
+            {% comment %} <input type="text" name="department" placeholder="Department (e.g., College of Computing Studies)" required> {% endcomment %}
             <input type="email" name="email" placeholder="Email" required>
             <input type="password" name="password" placeholder="Password" required>
             <button type="submit">Register</button>

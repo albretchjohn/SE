@@ -131,22 +131,22 @@
       
                 <div class="mb-3">
                   <label class="form-label">Calorie Intake Per Day</label>
-                  <input type="number" class="form-control" name="calorie_intake_per_day" value="{{ diet_plan.calorie_intake_per_day }}">
+                  <input type="number" step="1" class="form-control" name="calorie_intake_per_day" value="{{ diet_plan.calorie_intake_per_day|floatformat:0 }}">
                 </div>
       
                 <div class="mb-3">
                   <label class="form-label">Carbs Per Meal (g)</label>
-                  <input type="number" class="form-control" name="carbs_per_meal" value="{{ diet_plan.carbs_per_meal }}">
+                  <input type="number" step="1" class="form-control" name="carbs_per_meal" value="{{ diet_plan.carbs_per_meal|floatformat:0 }}">
                 </div>
       
                 <div class="mb-3">
                   <label class="form-label">Fats Per Meal (g)</label>
-                  <input type="number" class="form-control" name="fats_per_meal" value="{{ diet_plan.fats_per_meal }}">
+                  <input type="number" step="1" class="form-control" name="fats_per_meal" value="{{ diet_plan.fats_per_meal|floatformat:0 }}">
                 </div>
       
                 <div class="mb-3">
                   <label class="form-label">Protein Per Meal (g)</label>
-                  <input type="number" class="form-control" name="protein_per_meal" value="{{ diet_plan.protein_per_meal }}">
+                  <input type="number" step="1" class="form-control" name="protein_per_meal" value="{{ diet_plan.protein_per_meal|floatformat:0 }}">
                 </div>
       
                 <div class="mb-3">

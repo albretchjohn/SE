@@ -50,6 +50,11 @@
             <p><strong>Fats Per Meal:</strong> {{ diet_plan.fats_per_meal }} g</p>
             <p><strong>Protein Per Meal:</strong> {{ diet_plan.protein_per_meal }} g</p>
             <p><strong>Dietitian:</strong> {{ diet_plan.reviewed_by_fullname_he }} </p>
+            {% if dietitianComment %}
+              <p><strong>Dietitian Comment: </strong>{{ dietitianComment.review_comments }}</p>
+            {% else %}
+              <p>No comments yet.</p>
+            {% endif %}
           </div>
         </div>
   
@@ -92,6 +97,11 @@
                 </div>
 
                 <p class="mt-3"><strong>Trainer:</strong> {{ exercise_plan.reviewed_by_fullname_csspe }}</p>
+                {% if trainerComment %}
+                  <p><strong>Trainer Comment: </strong>{{ trainerComment.review_comments }}</p>
+                {% else %}
+                  <p>No comments yet.</p>
+                {% endif %}
               </div>
             </div>
           </div>
