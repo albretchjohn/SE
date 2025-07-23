@@ -123,10 +123,11 @@ DATABASES = {
         'PASSWORD': 'uQGXMunNTMv0keabHtpdTekJXRmIquiq',
         'HOST': 'dpg-d1h9oa21l9vc73bh5vdg-a.oregon-postgres.render.com',
         'PORT': '5432',
-        # 'OPTIONS': {
-        #     'sslmode': 'require',
-        #     # 'options': '-c search_path=db_se,public'
-        # }
+         'OPTIONS': {
+            #  'sslmode': 'require',
+             'sslmode': 'prefer',
+             # 'options': '-c search_path=db_se,public'
+         }
     }
 }
 
