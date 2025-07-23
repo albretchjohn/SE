@@ -125,7 +125,7 @@ DATABASES = {
         'PORT': '5432',
         'OPTIONS': {
              'sslmode': 'require',
-            'options': '-c search_path=db_se,public'
+            # 'options': '-c search_path=db_se,public'
         }
     }
 }
