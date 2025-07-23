@@ -153,7 +153,8 @@ def register_faculty(request):
         Faculty.objects.create(name=f"{first_name} {last_name}", email=email, department=department)
 
         messages.success(request, 'Faculty registered successfully.')
-        return redirect('admin_interface')
+        # return redirect('admin_interface')
+        return redirect('home')
 
     return render(request, 'faculty_register.html')
 
