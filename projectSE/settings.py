@@ -124,10 +124,13 @@ DATABASES = {
         'HOST': 'dpg-d1h9oa21l9vc73bh5vdg-a.oregon-postgres.render.com',
         'PORT': '5432',
          'OPTIONS': {
-            #  'sslmode': 'require',
-             'sslmode': 'prefer',
+              'sslmode': 'require',
+              'connect_timeout': 10,
+              'options': '-c statement_timeout=30000'
+             #'sslmode': 'prefer',
              # 'options': '-c search_path=db_se,public'
-         }
+         },
+         'CONN_MAX_AGE': 600,
     }
 }
 
