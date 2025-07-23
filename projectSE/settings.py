@@ -115,22 +115,37 @@ WSGI_APPLICATION = 'projectSE.wsgi.application'
 #     }
 # }
 
+# DATABASES = {
+#     'default': {
+#         'ENGINE': 'django.db.backends.postgresql',
+#         'NAME': 'wmsuwellness_9u0m',
+#         'USER': 'wmsuwellness_9u0m_user',
+#         'PASSWORD': 'uQGXMunNTMv0keabHtpdTekJXRmIquiq',
+#         'HOST': 'dpg-d1h9oa21l9vc73bh5vdg-a.oregon-postgres.render.com',
+#         'PORT': '5432',
+#          'OPTIONS': {
+#               'sslmode': 'require',
+#               'connect_timeout': 10,
+#               'options': '-c statement_timeout=30000'
+#              #'sslmode': 'prefer',
+#              # 'options': '-c search_path=db_se,public'
+#          },
+#          'CONN_MAX_AGE': 600,
+#     }
+# }
+
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql',
-        'NAME': 'wmsuwellness_9u0m',
-        'USER': 'wmsuwellness_9u0m_user',
-        'PASSWORD': 'uQGXMunNTMv0keabHtpdTekJXRmIquiq',
-        'HOST': 'dpg-d1h9oa21l9vc73bh5vdg-a.oregon-postgres.render.com',
+        'NAME': 'wellness_wmsu',
+        'USER': 'wellness_wmsu_user',
+        'PASSWORD': 'QygsqpGvnAPzie0A22HbvM13BErUAUZX',
+        'HOST': 'dpg-d20gbjre5dus73dcrv90-a.oregon-postgres.render.com',
         'PORT': '5432',
-         'OPTIONS': {
-              'sslmode': 'require',
-              'connect_timeout': 10,
-              'options': '-c statement_timeout=30000'
-             #'sslmode': 'prefer',
-             # 'options': '-c search_path=db_se,public'
-         },
-         'CONN_MAX_AGE': 600,
+        'OPTIONS': {
+            'sslmode': 'require',
+            # 'options': '-c search_path=db_se,public'
+        }
     }
 }
 
