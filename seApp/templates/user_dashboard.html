@@ -32,9 +32,18 @@
       <div class="card shadow mb-4">
         <div class="card-body">
           <h2 class="card-title mb-3">Welcome, {{ user_profile.first_name }}!</h2>
-          <p><strong>Weight:</strong> {{ user_profile.weight }} kg</p>
+          {% if comments %}
+          <p><strong>Original Weight:</strong> {{ user_profile.weight }} kg || <strong>Current Weight:</strong> {{ comments.0.weight }}  </p>
+          {% endif %}
           <p><strong>Height:</strong> {{ user_profile.height }} cm</p>
-          <p><strong>BMI:</strong> {{ user_profile.bmi }}</p>
+          <p><strong>Original BMI:</strong> {{ user_profile.bmi }} || <strong>Current BMI:</strong> {{ current_bmi }} || Currently <strong>{{ current_bmi_category }}</strong></p>
+          <h5 class="card-title">BMI Guide</h5>
+          <ul class="list-group list-group-flush">
+            <li class="list-group-item"><strong>Underweight:</strong> &lt; 18.5</li>
+            <li class="list-group-item"><strong>Normal:</strong> 18.5 – 24.9</li>
+            <li class="list-group-item"><strong>Overweight:</strong> 25.0 – 29.9</li>
+            <li class="list-group-item"><strong>Obese:</strong> ≥ 30</li>
+          </ul>
         </div>
       </div>
   

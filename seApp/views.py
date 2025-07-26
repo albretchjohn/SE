@@ -10,6 +10,7 @@ from datetime import datetime
 from .exercise_data import strength_exercises, cardio_exercises, flexibility_exercises 
 import random
 from django.db.models import Q
+from django.core.paginator import Paginator
 
 # User = get_user_model()
 
@@ -215,7 +216,7 @@ def handle_user_redirect(request, user):
                 return redirect('csspe_dashboard')
             else:
                 return redirect('he_dashboard')
-        elif user.user_type == 'Admin':
+        elif user.user_type.lower() == 'admin':
             return redirect('admin_interface')
     except Exception as e:
         messages.error(request, f'Error: {str(e)}')
@@ -472,6 +473,23 @@ def user_dashboard(request):
         dates = [entry.date_logged.strftime("%Y-%m-%d") for entry in chart_entries]
         weights = [entry.weight for entry in chart_entries]
         
+        current_bmi = None
+        current_bmi_category = None
+        if weight_entries and user_profile.height:
+            current_weight = weight_entries[0].weight
+            height_m = user_profile.height / 100  # convert cm to meters
+            if height_m > 0:
+                current_bmi = round(current_weight / (height_m ** 2), 2)
+                
+                if current_bmi < 18.5:
+                    current_bmi_category = "Underweight"
+                elif 18.5 <= current_bmi < 25:
+                    current_bmi_category = "Normal"
+                elif 25 <= current_bmi < 30:
+                    current_bmi_category = "Overweight"
+                else:
+                    current_bmi_category = "Obese"                        
+        
         dietitianComment = None
         if diet_plan:
             dietitianComment = D_PlanApproval.objects.filter(D_plan=diet_plan).order_by("-review_date").first()
@@ -490,6 +508,8 @@ def user_dashboard(request):
                 'comments': weight_entries,
                 'dietitianComment': dietitianComment,
                 'trainerComment': trainerComment,
+                'current_bmi': current_bmi,
+                'current_bmi_category': current_bmi_category,
             })
         else:
             messages.info(request, 'Your personalized plans are still under review. Please come again later.')
@@ -534,12 +554,26 @@ def user_detail(request, user_id):
     return render(request, 'user_detail.html', context)
 
 #admin interface 
-@login_required
+# @login_required
 def the_admin(request):
-    if request.user.user_type != 'Admin': 
-        messages.error(request, 'You do not have permission to view this page.')
-        return redirect('home') 
-    return render(request, 'admin_interface.html')
+    query = request.GET.get('search', '').strip()
+    faculty_list = Faculty.objects.all()
+
+    
+    if query:
+        faculty_list = faculty_list.filter(name__icontains=query)
+    if request.user.user_type.lower() != 'admin': 
+         messages.error(request, 'You do not have permission to view this page.')
+         return redirect('home')
+     
+    paginator = Paginator(faculty_list, 10)
+    page_number = request.GET.get('page')
+    page_obj = paginator.get_page(page_number) 
+    context = {
+        'faculty_list': faculty_list,
+        'page_obj': page_obj,
+    }
+    return render(request, 'admin_interface.html', context)
 
 #for testing
 def view_exercise_plans(request):
@@ -682,6 +716,15 @@ def submit_progress(request):
         return redirect('user_dashboard')  # or wherever you want to redirect after saving
 
     return redirect('user_dashboard')  # fallback if accessed via GET
+
+
+def exercise_data_view(request):
+    context = {
+        'strength_exercises': strength_exercises,
+        'cardio_exercises': cardio_exercises,
+        'flexibility_exercises': flexibility_exercises,
+    }
+    return render(request, 'exerciseList.html', context)
 
 
 
