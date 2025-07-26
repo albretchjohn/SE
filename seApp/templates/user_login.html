@@ -14,8 +14,10 @@
             {% comment %} <button type="button" class="close-btn" onclick="history.back()">×</button> {% endcomment %}
             {% if messages %}
                 {% for message in messages %}
-                    <div class="alert alert-danger">Wrong Username or Password</div>
-                    <script>alert("{{ message }}");</script>
+                    {% if message|stringformat:"s" == "Invalid username or password" %}
+                        <div class="alert alert-danger">Wrong Username or Password</div>
+                        <script>alert("{{ message }}");</script>
+                    {% endif %}
                 {% endfor %}
             {% endif %}
             
