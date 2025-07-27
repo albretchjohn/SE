@@ -41,6 +41,7 @@
                     <tr>
                         <th>Faculty Members Name</th>
                         <th>Department</th>
+                        <th>Log</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -48,6 +49,7 @@
                     <tr>
                         <td>{{ user.name }}</td>
                         <td>{{ user.department }}</td>
+                        <td><a href="{% url 'facultyLog' user.id %}" class="btn btn-sm btn-danger">View Log</a></td>
                     </tr>
                     {% empty %}
                     <tr>

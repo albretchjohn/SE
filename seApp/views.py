@@ -11,6 +11,8 @@ from .exercise_data import strength_exercises, cardio_exercises, flexibility_exe
 import random
 from django.db.models import Q
 from django.core.paginator import Paginator
+from django.db import models
+
 
 # User = get_user_model()
 
@@ -558,6 +560,7 @@ def user_detail(request, user_id):
 def the_admin(request):
     query = request.GET.get('search', '').strip()
     faculty_list = Faculty.objects.all()
+    # faculty = get_object_or_404(Faculty, id=id)
 
     
     if query:
@@ -572,6 +575,7 @@ def the_admin(request):
     context = {
         'faculty_list': faculty_list,
         'page_obj': page_obj,
+        # 'faculty': faculty,
     }
     return render(request, 'admin_interface.html', context)
 
@@ -725,6 +729,27 @@ def exercise_data_view(request):
         'flexibility_exercises': flexibility_exercises,
     }
     return render(request, 'exerciseList.html', context)
+
+def facultyLog(request, id):
+    faculty = get_object_or_404(Faculty, id=id)
+
+    # Load DietPlans reviewed by this faculty (HE), with related user and profile
+    diet_plans = DietPlan.objects.select_related('user__profile').filter(
+        reviewed_by_fullname_he__iexact=faculty.name
+    )
+
+    # Load ExercisePlans reviewed by this faculty (HE or CSSPE), with related user and profile
+    exercise_plans = ExercisePlan.objects.select_related('user__profile').filter(
+        Q(reviewed_by_fullname_he__iexact=faculty.name) |
+        Q(reviewed_by_fullname_csspe__iexact=faculty.name)
+    )
+
+    context = {
+        'faculty': faculty,
+        'diet_plans': diet_plans,
+        'exercise_plans': exercise_plans,
+    }
+    return render(request, 'facultyLog.html', context)
 
 
 
