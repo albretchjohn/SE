@@ -12,6 +12,8 @@ import random
 from django.db.models import Q
 from django.core.paginator import Paginator
 from django.db import models
+from django.db.models import OuterRef, Subquery, F, FloatField, ExpressionWrapper
+from django.db.models.functions import Abs
 
 
 # User = get_user_model()
@@ -219,7 +221,7 @@ def handle_user_redirect(request, user):
             else:
                 return redirect('he_dashboard')
         elif user.user_type.lower() == 'admin':
-            return redirect('admin_interface')
+            return redirect('adminDashboard')
     except Exception as e:
         messages.error(request, f'Error: {str(e)}')
         return redirect('user_login')
@@ -750,6 +752,80 @@ def facultyLog(request, id):
         'exercise_plans': exercise_plans,
     }
     return render(request, 'facultyLog.html', context)
+
+
+
+
+
+def dashboard_view(request):
+    num_faculty = Faculty.objects.count()
+    num_user = CustomUser.objects.filter(user_type='user').count()
+    users = Profile.objects.all()
+    trainer = ExercisePlan.objects.all()
+    dietitian = DietPlan.objects.all()
+
+    # Count all exercises (if your structure is nested)
+    exercise_count = 0
+    for level in strength_exercises.values():
+        for equipment_type in level.values():
+            exercise_count += len(equipment_type)
+            
+            
+    # Subquery: Get latest weight per user from weight entries
+    latest_weight_qs = WeightEntry.objects.filter(
+        user=OuterRef('user')
+    ).order_by('-date_logged').values('weight')[:1]
+    
+    # Subquery: Get trainer name from ExercisePlan
+    trainer_name_qs = ExercisePlan.objects.filter(
+        user=OuterRef('user')
+    ).order_by('-date_created').values('reviewed_by_fullname_csspe')[:1]
+
+    # Subquery: Get dietitian name from DietPlan
+    dietitian_name_qs = DietPlan.objects.filter(
+        user=OuterRef('user')  # Assuming DietPlan has user field
+    ).order_by('-date_created').values('reviewed_by_fullname_he')[:1]
+
+    # # Annotate profiles with latest weight and compute progress
+    
+
+    
+    annotated_profiles = Profile.objects.annotate(
+        latest_weight=Subquery(latest_weight_qs),
+        trainer_name=Subquery(trainer_name_qs),
+        dietitian_name=Subquery(dietitian_name_qs),
+        progress=ExpressionWrapper(
+            F('weight') - Subquery(latest_weight_qs),
+            output_field=FloatField()
+        ),
+        abs_progress=Abs(
+            ExpressionWrapper(
+                F('weight') - Subquery(latest_weight_qs),
+                output_field=FloatField()
+            )
+        )
+    )
+
+    # Filter out users with no latest weight (None)
+    filtered_profiles = annotated_profiles.filter(latest_weight__isnull=False)
+
+    # Order by greatest absolute change
+    top_users = filtered_profiles.order_by('-abs_progress')[:5]  
+    
+    
+    
+
+    context = {
+        'num_faculty': num_faculty,
+        'num_exercises': exercise_count,
+        'num_user': num_user,
+        # 'top_users': profiles,
+        'top_users': top_users,
+        'trainer': trainer,
+        'dietitian': dietitian,
+    }
+
+    return render(request, 'adminDashboard.html', context)
 
 
 
