@@ -1,0 +1,890 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Exercise Database Management</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            {% comment %} background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); {% endcomment %}
+            {% comment %} background: linear-gradient(135deg, crimson 0%, #b22222 100%); {% endcomment %}
+            background: linear-gradient(135deg, #ffffff 0%, #f0f0f0 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 20px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+        }
+
+        .header {
+            {% comment %} background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%); {% endcomment %}
+            background: linear-gradient(135deg, crimson 0%, #b22222 100%);
+            padding: 30px;
+            text-align: center;
+            color: white;
+        }
+
+        .header h1 {
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+        }
+
+        .header p {
+            font-size: 1.1rem;
+            opacity: 0.9;
+        }
+
+        .main-content {
+            padding: 30px;
+        }
+
+        .controls {
+            display: flex;
+            gap: 20px;
+            margin-bottom: 30px;
+            flex-wrap: wrap;
+            align-items: center;
+        }
+
+        .btn {
+            padding: 12px 24px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 1rem;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+
+        .btn-success {
+            background: linear-gradient(135deg, #56ab2f 0%, #a8e6cf 100%);
+            color: white;
+        }
+
+        .btn-warning {
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            color: white;
+        }
+
+        .btn-danger {
+            background: linear-gradient(135deg, #ff416c 0%, #ff4b2b 100%);
+            color: white;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+        }
+
+        .filters {
+            display: flex;
+            gap: 15px;
+            flex-wrap: wrap;
+            align-items: center;
+        }
+
+        .filter-group {
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+        }
+
+        .filter-group label {
+            font-weight: 600;
+            color: #555;
+            font-size: 0.9rem;
+        }
+
+        select, input {
+            padding: 10px;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            font-size: 1rem;
+            transition: border-color 0.3s ease;
+        }
+
+        select:focus, input:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+
+        .table-container {
+            background: white;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        th {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 15px 12px;
+            text-align: left;
+            font-weight: 600;
+            position: sticky;
+            top: 0;
+            z-index: 10;
+        }
+
+        td {
+            padding: 12px;
+            border-bottom: 1px solid #f0f0f0;
+            vertical-align: top;
+        }
+
+        tr:hover {
+            background-color: #f8f9ff;
+        }
+
+        .badge {
+            display: inline-block;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            text-transform: uppercase;
+        }
+
+        .badge-strength {
+            background: #e3f2fd;
+            color: #1976d2;
+        }
+
+        .badge-cardio {
+            background: #fff3e0;
+            color: #f57200;
+        }
+
+        .badge-flexibility {
+            background: #f3e5f5;
+            color: #7b1fa2;
+        }
+
+        .badge-equipment {
+            background: #e8f5e8;
+            color: #2e7d32;
+        }
+
+        .badge-no-equipment {
+            background: #ffebee;
+            color: #c62828;
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.7);
+            z-index: 1000;
+            animation: fadeIn 0.3s ease;
+        }
+
+        .modal-content {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: white;
+            padding: 30px;
+            border-radius: 15px;
+            width: 90%;
+            max-width: 600px;
+            max-height: 90vh;
+            overflow-y: auto;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+        }
+
+        .modal h2 {
+            margin-bottom: 20px;
+            color: #333;
+            font-size: 1.8rem;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: #555;
+        }
+
+        .form-group input,
+        .form-group select,
+        .form-group textarea {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            font-size: 1rem;
+            transition: border-color 0.3s ease;
+        }
+
+        .form-group textarea {
+            height: 80px;
+            resize: vertical;
+        }
+
+        .checkbox-group {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .checkbox-group input[type="checkbox"] {
+            width: auto;
+        }
+
+        .form-actions {
+            display: flex;
+            gap: 15px;
+            justify-content: flex-end;
+            margin-top: 30px;
+        }
+
+        .stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .stat-card {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 20px;
+            border-radius: 12px;
+            text-align: center;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+        }
+
+        .stat-number {
+            font-size: 2rem;
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+
+        .stat-label {
+            font-size: 0.9rem;
+            opacity: 0.9;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        .no-results {
+            text-align: center;
+            padding: 40px;
+            color: #666;
+        }
+
+        .action-buttons {
+            display: flex;
+            gap: 8px;
+        }
+
+        .btn-sm {
+            padding: 6px 12px;
+            font-size: 0.8rem;
+        }
+
+        @media (max-width: 768px) {
+            .controls {
+                flex-direction: column;
+                align-items: stretch;
+            }
+
+            .filters {
+                flex-direction: column;
+            }
+
+            table {
+                font-size: 0.9rem;
+            }
+
+            th, td {
+                padding: 8px;
+            }
+
+            .modal-content {
+                padding: 20px;
+                margin: 20px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🏋️ Exercise Database Manager</h1>
+            <p>Interface for managing your exercises</p>
+        </div>
+
+        <div class="main-content">
+            <div class="stats" id="stats">
+                <!-- Stats will be populated here -->
+            </div>
+
+            <div class="controls">
+                <button class="btn btn-success" onclick="showAddModal()">
+                    ➕ Add New Exercise
+                </button>
+                
+                <div class="filters">
+                    <div class="filter-group">
+                        <label>Exercise Type:</label>
+                        <select id="typeFilter" onchange="applyFilters()">
+                            <option value="">All Types</option>
+                            <option value="strength">Strength</option>
+                            <option value="cardio">Cardio</option>
+                            <option value="flexibility">Flexibility</option>
+                        </select>
+                    </div>
+
+                    <div class="filter-group">
+                        <label>Activity Level:</label>
+                        <select id="levelFilter" onchange="applyFilters()">
+                            <option value="">All Levels</option>
+                            <option value="sedentary">Sedentary</option>
+                            <option value="lightly_active">Lightly Active</option>
+                            <option value="moderately_active">Moderately Active</option>
+                            <option value="very_active">Very Active</option>
+                            <option value="extremely_active">Extremely Active</option>
+                        </select>
+                    </div>
+
+                    <div class="filter-group">
+                        <label>Equipment:</label>
+                        <select id="equipmentFilter" onchange="applyFilters()">
+                            <option value="">All</option>
+                            <option value="true">With Equipment</option>
+                            <option value="false">No Equipment</option>
+                        </select>
+                    </div>
+
+                    <div class="filter-group">
+                        <label>Search:</label>
+                        <input type="text" id="searchInput" placeholder="Search exercises..." onkeyup="applyFilters()">
+                    </div>
+                </div>
+            </div>
+
+            <div class="table-container">
+                <table id="exerciseTable">
+                    <thead>
+                        <tr>
+                            <th>Exercise Name</th>
+                            <th>Type</th>
+                            <th>Activity Level</th>
+                            <th>Equipment</th>
+                            <th>Duration</th>
+                            <th>Reps</th>
+                            <th>Sets</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="exerciseTableBody">
+                        <!-- Exercise data will be populated here -->
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <!-- Add/Edit Modal -->
+    <div id="exerciseModal" class="modal">
+        <div class="modal-content">
+            <h2 id="modalTitle">Add New Exercise</h2>
+            <form id="exerciseForm">
+                <input type="hidden" id="exerciseId">
+                
+                <div class="form-group">
+                    <label for="exerciseName">Exercise Name:</label>
+                    <input type="text" id="exerciseName" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="exerciseType">Exercise Type:</label>
+                    <select id="exerciseType" required>
+                        <option value="">Select Type</option>
+                        <option value="strength">Strength</option>
+                        <option value="cardio">Cardio</option>
+                        <option value="flexibility">Flexibility</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label for="activityLevel">Activity Level:</label>
+                    <select id="activityLevel" required>
+                        <option value="">Select Level</option>
+                        <option value="sedentary">Sedentary</option>
+                        <option value="lightly_active">Lightly Active</option>
+                        <option value="moderately_active">Moderately Active</option>
+                        <option value="very_active">Very Active</option>
+                        <option value="extremely_active">Extremely Active</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <div class="checkbox-group">
+                        <input type="checkbox" id="requiresEquipment">
+                        <label for="requiresEquipment">Requires Equipment</label>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="duration">Duration:</label>
+                    <input type="text" id="duration" placeholder="e.g., 30 mins, 2 mins" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="reps">Repetitions:</label>
+                    <input type="number" id="reps" min="0" value="0">
+                </div>
+
+                <div class="form-group">
+                    <label for="sets">Sets:</label>
+                    <input type="number" id="sets" min="1" value="1" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="description">Description (Optional):</label>
+                    <textarea id="description" placeholder="Additional notes about the exercise..."></textarea>
+                </div>
+
+                <div class="form-actions">
+                    <button type="button" class="btn btn-secondary" onclick="closeModal()">Cancel</button>
+                    <button type="submit" class="btn btn-primary">Save Exercise</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    {% comment %} <script>
+        // Sample data structure - in a real application, this would come from your Django backend
+        let exercises = [];
+        let filteredExercises = [];
+        let nextId = 1;
+
+        // Initialize with sample data from your provided structure
+        function initializeData() {
+            const sampleData = [
+                // Strength exercises
+                { name: 'Leg Press', type: 'strength', level: 'sedentary', equipment: true, duration: '30 mins', reps: 10, sets: 3 },
+                { name: 'Bodyweight Squats', type: 'strength', level: 'sedentary', equipment: false, duration: '15 mins', reps: 15, sets: 3 },
+                { name: 'Deadlifts', type: 'strength', level: 'moderately_active', equipment: true, duration: '30 mins', reps: 8, sets: 4 },
+                { name: 'Jump Squats', type: 'strength', level: 'moderately_active', equipment: false, duration: '20 mins', reps: 20, sets: 3 },
+                
+                // Cardio exercises
+                { name: 'Stationary Bike', type: 'cardio', level: 'sedentary', equipment: true, duration: '20 mins', reps: 1, sets: 1 },
+                { name: 'Walking', type: 'cardio', level: 'sedentary', equipment: false, duration: '30 mins', reps: 1, sets: 1 },
+                { name: 'Running', type: 'cardio', level: 'moderately_active', equipment: false, duration: '45 mins', reps: 1, sets: 1 },
+                
+                // Flexibility exercises
+                { name: 'Basic Yoga', type: 'flexibility', level: 'sedentary', equipment: false, duration: '20 mins', reps: 1, sets: 1 },
+                { name: 'Foam Rolling', type: 'flexibility', level: 'lightly_active', equipment: true, duration: '20 mins', reps: 1, sets: 1 },
+                { name: 'Advanced Yoga', type: 'flexibility', level: 'moderately_active', equipment: false, duration: '40 mins', reps: 1, sets: 1 }
+            ];
+
+            exercises = sampleData.map(exercise => ({
+                id: nextId++,
+                ...exercise,
+                description: ''
+            }));
+
+            filteredExercises = [...exercises];
+            updateStats();
+            renderTable();
+        }
+
+        function updateStats() {
+            const stats = {
+                total: exercises.length,
+                strength: exercises.filter(e => e.type === 'strength').length,
+                cardio: exercises.filter(e => e.type === 'cardio').length,
+                flexibility: exercises.filter(e => e.type === 'flexibility').length,
+                withEquipment: exercises.filter(e => e.equipment).length,
+                noEquipment: exercises.filter(e => !e.equipment).length
+            };
+
+            document.getElementById('stats').innerHTML = `
+                <div class="stat-card">
+                    <div class="stat-number">${stats.total}</div>
+                    <div class="stat-label">Total Exercises</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number">${stats.strength}</div>
+                    <div class="stat-label">Strength</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number">${stats.cardio}</div>
+                    <div class="stat-label">Cardio</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number">${stats.flexibility}</div>
+                    <div class="stat-label">Flexibility</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number">${stats.withEquipment}</div>
+                    <div class="stat-label">With Equipment</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number">${stats.noEquipment}</div>
+                    <div class="stat-label">No Equipment</div>
+                </div>
+            `;
+        }
+
+        function renderTable() {
+            const tbody = document.getElementById('exerciseTableBody');
+            
+            if (filteredExercises.length === 0) {
+                tbody.innerHTML = `
+                    <tr>
+                        <td colspan="8" class="no-results">
+                            <h3>No exercises found</h3>
+                            <p>Try adjusting your filters or add a new exercise.</p>
+                        </td>
+                    </tr>
+                `;
+                return;
+            }
+
+            tbody.innerHTML = filteredExercises.map(exercise => `
+                <tr>
+                    <td><strong>${exercise.name}</strong></td>
+                    <td><span class="badge badge-${exercise.type}">${exercise.type}</span></td>
+                    <td>${formatActivityLevel(exercise.level)}</td>
+                    <td><span class="badge ${exercise.equipment ? 'badge-equipment' : 'badge-no-equipment'}">${exercise.equipment ? 'Yes' : 'No'}</span></td>
+                    <td>${exercise.duration}</td>
+                    <td>${exercise.reps}</td>
+                    <td>${exercise.sets}</td>
+                    <td>
+                        <div class="action-buttons">
+                            <button class="btn btn-warning btn-sm" onclick="editExercise(${exercise.id})">Edit</button>
+                            <button class="btn btn-danger btn-sm" onclick="deleteExercise(${exercise.id})">Delete</button>
+                        </div>
+                    </td>
+                </tr>
+            `).join('');
+        }
+
+        function formatActivityLevel(level) {
+            const levels = {
+                'sedentary': 'Sedentary',
+                'lightly_active': 'Lightly Active',
+                'moderately_active': 'Moderately Active',
+                'very_active': 'Very Active',
+                'extremely_active': 'Extremely Active'
+            };
+            return levels[level] || level;
+        }
+
+        function applyFilters() {
+            const typeFilter = document.getElementById('typeFilter').value;
+            const levelFilter = document.getElementById('levelFilter').value;
+            const equipmentFilter = document.getElementById('equipmentFilter').value;
+            const searchInput = document.getElementById('searchInput').value.toLowerCase().trim();
+
+            filteredExercises = exercises.filter(exercise => {
+                const matchesType = !typeFilter || exercise.type === typeFilter;
+                const matchesLevel = !levelFilter || exercise.level === levelFilter;
+                const matchesEquipment = !equipmentFilter || exercise.equipment.toString() === equipmentFilter;
+                const matchesSearch = !searchInput || exercise.name.toLowerCase().includes(searchInput);
+
+                return matchesType && matchesLevel && matchesEquipment && matchesSearch;
+            });
+
+            renderTable();
+        }
+
+        function showAddModal() {
+            document.getElementById('modalTitle').textContent = 'Add New Exercise';
+            document.getElementById('exerciseForm').reset();
+            document.getElementById('exerciseId').value = '';
+            document.getElementById('exerciseModal').style.display = 'block';
+        }
+
+        function editExercise(id) {
+            const exercise = exercises.find(e => e.id === id);
+            if (!exercise) return;
+
+            document.getElementById('modalTitle').textContent = 'Edit Exercise';
+            document.getElementById('exerciseId').value = exercise.id;
+            document.getElementById('exerciseName').value = exercise.name;
+            document.getElementById('exerciseType').value = exercise.type;
+            document.getElementById('activityLevel').value = exercise.level;
+            document.getElementById('requiresEquipment').checked = exercise.equipment;
+            document.getElementById('duration').value = exercise.duration;
+            document.getElementById('reps').value = exercise.reps;
+            document.getElementById('sets').value = exercise.sets;
+            document.getElementById('description').value = exercise.description || '';
+            document.getElementById('exerciseModal').style.display = 'block';
+        }
+
+        function deleteExercise(id) {
+            const exercise = exercises.find(e => e.id === id);
+            if (!exercise) return;
+
+            if (confirm(`Are you sure you want to delete "${exercise.name}"?`)) {
+                exercises = exercises.filter(e => e.id !== id);
+                applyFilters();
+                updateStats();
+            }
+        }
+
+        function closeModal() {
+            document.getElementById('exerciseModal').style.display = 'none';
+        }
+
+        // Form submission handler
+        document.getElementById('exerciseForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const formData = {
+                name: document.getElementById('exerciseName').value.trim(),
+                type: document.getElementById('exerciseType').value,
+                level: document.getElementById('activityLevel').value,
+                equipment: document.getElementById('requiresEquipment').checked,
+                duration: document.getElementById('duration').value.trim(),
+                reps: parseInt(document.getElementById('reps').value) || 0,
+                sets: parseInt(document.getElementById('sets').value) || 1,
+                description: document.getElementById('description').value.trim()
+            };
+
+            const exerciseId = document.getElementById('exerciseId').value;
+
+            if (exerciseId) {
+                // Update existing exercise
+                const index = exercises.findIndex(e => e.id == exerciseId);
+                if (index !== -1) {
+                    exercises[index] = { ...exercises[index], ...formData };
+                }
+            } else {
+                // Add new exercise
+                exercises.push({
+                    id: nextId++,
+                    ...formData
+                });
+            }
+
+            closeModal();
+            applyFilters();
+            updateStats();
+        });
+
+        // Close modal when clicking outside
+        document.getElementById('exerciseModal').addEventListener('click', function(e) {
+            if (e.target === this) {
+                closeModal();
+            }
+        });
+
+        // Initialize the application
+        initializeData();
+    </script> {% endcomment %}
+
+
+<script>
+document.addEventListener('DOMContentLoaded', fetchExercises);
+{% comment %} document.addEventListener('DOMContentLoaded', function () {
+        fetchExercises();
+    }); {% endcomment %}
+let allExercises = [];
+
+async function fetchExercises() {
+    const response = await fetch('/api/exercises/');
+    const data = await response.json();
+    allExercises = data.exercises;
+    populateTable(data.exercises);
+} 
+
+{% comment %} function fetchExercises() {
+    fetch('/api/exercises/')
+        .then(res => res.json())
+        .then(data => {
+            allExercises = data; // save them for later access
+            renderExercises(data);
+        });
+}  {% endcomment %}
+
+function populateTable(exercises) {
+    const tbody = document.getElementById('exerciseTableBody');
+    tbody.innerHTML = '';
+    exercises.forEach(ex => {
+        const row = `
+            <tr>
+                <td>${ex.name}</td>
+                <td>${ex.type}</td>
+                <td>${ex.level}</td>
+                <td>${ex.equipment ? 'Yes' : 'No'}</td>
+                <td>${ex.duration}</td>
+                <td>${ex.reps}</td>
+                <td>${ex.sets}</td>
+                <td>
+                    <button onclick="editExercise('${ex.id}')">✏️</button>
+                    <button onclick="deleteExercise(${ex.id})">🗑️</button>
+                </td>
+            </tr>
+        `;
+        tbody.insertAdjacentHTML('beforeend', row);
+    });
+}
+
+function showAddModal() {
+    document.getElementById('exerciseForm').reset();
+    document.getElementById('exerciseId').value = '';
+    document.getElementById('modalTitle').textContent = 'Add New Exercise';
+    document.getElementById('exerciseModal').style.display = 'block';
+}
+
+{% comment %} function editExercise(exerciseJson) {
+    const ex = typeof exerciseJson === 'string' ? JSON.parse(decodeURIComponent(exerciseJson)) : exerciseJson;
+    document.getElementById('exerciseId').value = ex.id;
+    document.getElementById('exerciseName').value = ex.name;
+    document.getElementById('exerciseType').value = ex.type.toLowerCase();
+    document.getElementById('activityLevel').value = ex.level.toLowerCase().replace(' ', '_');
+    document.getElementById('requiresEquipment').checked = ex.equipment;
+    document.getElementById('duration').value = ex.duration;
+    document.getElementById('reps').value = ex.reps;
+    document.getElementById('sets').value = ex.sets;
+    document.getElementById('description').value = ex.description;
+    document.getElementById('modalTitle').textContent = 'Edit Exercise';
+    document.getElementById('exerciseModal').style.display = 'block';
+} {% endcomment %}
+
+function editExercise(id) {
+    console.log("Editing ID:", id);
+    const ex = allExercises.find(e => e.id == id);
+    console.log("Found exercise:", ex);
+    if (!ex) return;
+
+    // now you can safely use ex to prefill your modal form
+    document.getElementById('modalTitle').innerText = 'Edit Exercise';
+    document.getElementById('exerciseId').value = ex.id;
+    document.getElementById('exerciseName').value = ex.name;
+    document.getElementById('exerciseType').value = ex.exercise_type;
+    document.getElementById('activityLevel').value = ex.activity_level;
+    document.getElementById('requiresEquipment').checked = ex.requires_equipment;
+    document.getElementById('duration').value = ex.duration;
+    document.getElementById('reps').value = ex.reps;
+    document.getElementById('sets').value = ex.sets;
+    document.getElementById('description').value = ex.description || '';
+
+    showModal();
+}
+
+function showModal() {
+    const modal = document.getElementById('exerciseModal');
+    if (modal) {
+        modal.style.display = 'block'; // or use Bootstrap's show if using Bootstrap modal
+    }
+}
+
+document.getElementById('exerciseForm').addEventListener('submit', async function(e) {
+    e.preventDefault();
+
+    const id = document.getElementById('exerciseId').value;
+    const data = {
+        id: id ? parseInt(id) : null,
+        name: document.getElementById('exerciseName').value,
+        type: document.getElementById('exerciseType').value,
+        level: document.getElementById('activityLevel').value,
+        equipment: document.getElementById('requiresEquipment').checked,
+        duration: document.getElementById('duration').value,
+        reps: parseInt(document.getElementById('reps').value),
+        sets: parseInt(document.getElementById('sets').value),
+        description: document.getElementById('description').value
+    };
+
+    const method = id ? 'PUT' : 'POST';
+    const response = await fetch('/api/exercises/', {
+        method: method,
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(data)
+    });
+
+    if ((await response.json()).success) {
+        closeModal();
+        fetchExercises();
+    }
+});
+
+async function deleteExercise(id) {
+    if (!confirm('Are you sure you want to delete this exercise?')) return;
+    const response = await fetch('/api/exercises/', {
+        method: 'DELETE',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ id })
+    });
+
+    if ((await response.json()).success) {
+        fetchExercises();
+    }
+}
+
+function closeModal() {
+    document.getElementById('exerciseModal').style.display = 'none';
+}
+
+
+function applyFilters() {
+    const type = document.getElementById('typeFilter').value;
+    const level = document.getElementById('levelFilter').value;
+    const equipment = document.getElementById('equipmentFilter').value;
+    const search = document.getElementById('searchInput').value.toLowerCase();
+
+    const filtered = allExercises.filter(ex => {
+        const matchesType = !type || ex.type === type;
+        const matchesLevel = !level || ex.level === level;
+        const matchesEquipment = equipment === ''
+            || (equipment === 'true' && ex.equipment)
+            || (equipment === 'false' && !ex.equipment);
+        const matchesSearch = ex.name.toLowerCase().includes(search);
+
+        return matchesType && matchesLevel && matchesEquipment && matchesSearch;
+    });
+
+    populateTable(filtered);
+}
+
+</script>
+
+</body>
+</html>

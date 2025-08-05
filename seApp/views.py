@@ -4,7 +4,7 @@ from django.contrib.auth.decorators import login_required, user_passes_test
 from django.contrib.auth import get_user_model
 from django.contrib import messages
 from django.core.mail import send_mail
-from .models import OTP, CustomUser, Profile, DietPlan, ExercisePlan, Faculty, E_PlanApproval, D_PlanApproval, WeightEntry
+from .models import OTP, CustomUser, Profile, DietPlan, ExercisePlan, Faculty, E_PlanApproval, D_PlanApproval, WeightEntry, Exercise, ActivityLevel, ExerciseType
 from django.utils import timezone
 from datetime import datetime
 from .exercise_data import strength_exercises, cardio_exercises, flexibility_exercises 
@@ -14,6 +14,27 @@ from django.core.paginator import Paginator
 from django.db import models
 from django.db.models import OuterRef, Subquery, F, FloatField, ExpressionWrapper
 from django.db.models.functions import Abs
+
+##########################################
+
+# from django.shortcuts import render, get_object_or_404, redirect
+# from django.http import JsonResponse
+# from django.views.decorators.csrf import csrf_exempt
+# from django.views.decorators.http import require_http_methods
+# from django.contrib import messages
+# from rest_framework import viewsets, status
+# from rest_framework.decorators import action
+# from rest_framework.response import Response
+# from .serializers import ExerciseSerializer
+# import json
+
+
+from django.http import JsonResponse, HttpResponseNotAllowed
+from django.views.decorators.csrf import csrf_exempt
+from django.shortcuts import render
+import json
+
+###########################################
 
 
 # User = get_user_model()
@@ -362,40 +383,104 @@ def generate_diet_plan(profile):
         return None
     
 #makes exercise routine/ list of exercise in 'exercise_data.py'
+# def generate_exercise_routine(profile):
+#     try:
+#         activity_level = 'sedentary' if profile.health_condition.count(',') >= 2 else profile.activity_level
+#         equipment = 'with_equipment' if 'yes' in profile.equipment_access.lower() else 'without_equipment'
+
+#         def select_exercises(exercises, num_exercises=3):
+#             return random.sample(exercises, k=random.randint(2, num_exercises))
+
+#         strength_routine = select_exercises(strength_exercises[activity_level][equipment])
+#         cardio_routine = select_exercises(cardio_exercises[activity_level][equipment])
+#         flexibility_routine = select_exercises(flexibility_exercises[activity_level][equipment])
+
+#         weekly_routine = {
+#             'day_1': strength_routine,
+#             'day_2': cardio_routine,
+#             'day_3': strength_routine,
+#             'day_4': flexibility_routine,
+#             'day_5': cardio_routine,
+#             'day_6': strength_routine,
+#             'day_7': [{'name': 'Rest Day', 'duration': '0 mins', 'reps': 0, 'sets': 0}]
+#         }
+
+#         return {
+#             'user_id': profile.user.id,
+#             'strength_exercises': ', '.join([ex['name'] for ex in strength_routine]),
+#             'flexibility_exercises': ', '.join([ex['name'] for ex in flexibility_routine]),
+#             'cardio_exercises': ', '.join([ex['name'] for ex in cardio_routine]),
+#             'routine': weekly_routine,
+#             'rest_day': 'Sunday',
+#             'status': 'Pending'
+#         }
+#     except Exception as e:
+#         print(f"Error generating exercise routine: {e}")
+#         return None
+
+
 def generate_exercise_routine(profile):
     try:
-        activity_level = 'sedentary' if profile.health_condition.count(',') >= 2 else profile.activity_level
-        equipment = 'with_equipment' if 'yes' in profile.equipment_access.lower() else 'without_equipment'
+        # Step 1: Determine the appropriate activity level and equipment access
+        activity_level_name = 'sedentary' if profile.health_condition.count(',') >= 2 else profile.activity_level.lower()
+        equipment_required = True if 'yes' in profile.equipment_access.lower() else False
 
-        def select_exercises(exercises, num_exercises=3):
-            return random.sample(exercises, k=random.randint(2, num_exercises))
+        def select_exercises(ex_type_name, max_count=3):
+            ex_type = ExerciseType.objects.get(name=ex_type_name)
+            level = ActivityLevel.objects.get(name=activity_level_name)
 
-        strength_routine = select_exercises(strength_exercises[activity_level][equipment])
-        cardio_routine = select_exercises(cardio_exercises[activity_level][equipment])
-        flexibility_routine = select_exercises(flexibility_exercises[activity_level][equipment])
+            matching_exercises = Exercise.objects.filter(
+                exercise_type=ex_type,
+                activity_level=level,
+                requires_equipment=equipment_required
+            )
+
+            exercises = list(matching_exercises)
+            if not exercises:
+                return []
+
+            return random.sample(exercises, k=min(len(exercises), random.randint(2, max_count)))
+
+        # Step 2: Get exercises from the database
+        strength_routine = select_exercises('strength')
+        cardio_routine = select_exercises('cardio')
+        flexibility_routine = select_exercises('flexibility')
+
+        # Step 3: Build weekly plan
+        def to_dict(ex):
+            return {
+                'name': ex.name,
+                'duration': ex.duration,
+                'reps': ex.reps,
+                'sets': ex.sets,
+                'description': ex.description or ''
+            }
 
         weekly_routine = {
-            'day_1': strength_routine,
-            'day_2': cardio_routine,
-            'day_3': strength_routine,
-            'day_4': flexibility_routine,
-            'day_5': cardio_routine,
-            'day_6': strength_routine,
+            'day_1': [to_dict(e) for e in strength_routine],
+            'day_2': [to_dict(e) for e in cardio_routine],
+            'day_3': [to_dict(e) for e in strength_routine],
+            'day_4': [to_dict(e) for e in flexibility_routine],
+            'day_5': [to_dict(e) for e in cardio_routine],
+            'day_6': [to_dict(e) for e in strength_routine],
             'day_7': [{'name': 'Rest Day', 'duration': '0 mins', 'reps': 0, 'sets': 0}]
         }
 
         return {
             'user_id': profile.user.id,
-            'strength_exercises': ', '.join([ex['name'] for ex in strength_routine]),
-            'flexibility_exercises': ', '.join([ex['name'] for ex in flexibility_routine]),
-            'cardio_exercises': ', '.join([ex['name'] for ex in cardio_routine]),
+            'strength_exercises': ', '.join([e.name for e in strength_routine]),
+            'flexibility_exercises': ', '.join([e.name for e in flexibility_routine]),
+            'cardio_exercises': ', '.join([e.name for e in cardio_routine]),
             'routine': weekly_routine,
             'rest_day': 'Sunday',
             'status': 'Pending'
         }
+
     except Exception as e:
         print(f"Error generating exercise routine: {e}")
         return None
+
+
 
 # calls those two functions to generate plan
 @login_required
@@ -826,6 +911,99 @@ def dashboard_view(request):
     }
 
     return render(request, 'adminDashboard.html', context)
+
+
+
+
+####################################################################
+
+
+
+
+def exercise_manager(request):
+    return render(request, 'exercise_manager.html')
+
+
+
+# def get_exercises(request):
+#     exercises = Exercise.objects.select_related('exercise_type', 'activity_level').all()
+#     data = []
+
+#     for e in exercises:
+#         data.append({
+#             'id': e.id,
+#             'name': e.name,
+#             'exercise_type': e.exercise_type.name,
+#             'activity_level': e.activity_level.name,
+#             'requires_equipment': e.requires_equipment,
+#             'duration': e.duration,
+#             'reps': e.reps,
+#             'sets': e.sets,
+#             'description': e.description or ''
+#         })
+
+#     return JsonResponse(data, safe=False)
+
+
+@csrf_exempt
+def api_exercises(request):
+    if request.method == 'GET':
+        exercises = Exercise.objects.select_related('exercise_type', 'activity_level').all()
+        data = [{
+            'id': ex.id,
+            'name': ex.name,
+            'type': ex.exercise_type.name,
+            'type_id': ex.exercise_type.id,
+            'level': ex.activity_level.name,
+            'level_id': ex.activity_level.id,
+            'equipment': ex.requires_equipment,
+            'duration': ex.duration,
+            'reps': ex.reps,
+            'sets': ex.sets,
+            'description': ex.description,
+        } for ex in exercises]
+        return JsonResponse({'exercises': data})
+
+    elif request.method == 'POST':
+        data = json.loads(request.body)
+        exercise_type = get_object_or_404(ExerciseType, name=data['type'])
+        activity_level = get_object_or_404(ActivityLevel, name=data['level'])
+
+        exercise = Exercise.objects.create(
+            name=data['name'],
+            exercise_type=exercise_type,
+            activity_level=activity_level,
+            requires_equipment=data['equipment'],
+            duration=data['duration'],
+            reps=data['reps'],
+            sets=data['sets'],
+            description=data['description']
+        )
+        return JsonResponse({'success': True, 'id': exercise.id})
+
+    elif request.method == 'PUT':
+        data = json.loads(request.body)
+        exercise = get_object_or_404(Exercise, id=data['id'])
+        exercise_type = get_object_or_404(ExerciseType, name=data['type'])
+        activity_level = get_object_or_404(ActivityLevel, name=data['level'])
+
+        exercise.name = data['name']
+        exercise.exercise_type = exercise_type
+        exercise.activity_level = activity_level
+        exercise.requires_equipment = data['equipment']
+        exercise.duration = data['duration']
+        exercise.reps = data['reps']
+        exercise.sets = data['sets']
+        exercise.description = data['description']
+        exercise.save()
+
+        return JsonResponse({'success': True})
+
+    elif request.method == 'DELETE':
+        data = json.loads(request.body)
+        exercise = get_object_or_404(Exercise, id=data['id'])
+        exercise.delete()
+        return JsonResponse({'success': True})
 
 
 

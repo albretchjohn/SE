@@ -134,4 +134,55 @@ class WeightEntry(models.Model):
 
     def __str__(self):
         return f"{self.user.username} - {self.weight} kg on {self.date_logged.date()}"
+    
+    
+    
+    
+
+
+############################################
+
+class ActivityLevel(models.Model):
+    ACTIVITY_CHOICES = [
+        ('sedentary', 'Sedentary'),
+        ('lightly_active', 'Lightly Active'),
+        ('moderately_active', 'Moderately Active'),
+        ('very_active', 'Very Active'),
+        ('extremely_active', 'Extremely Active'),
+    ]
+    name = models.CharField(max_length=20, choices=ACTIVITY_CHOICES, unique=True)
+    display_name = models.CharField(max_length=50)
+    
+    def __str__(self):
+        return self.display_name
+
+class ExerciseType(models.Model):
+    TYPE_CHOICES = [
+        ('strength', 'Strength'),
+        ('cardio', 'Cardio'),
+        ('flexibility', 'Flexibility'),
+    ]
+    name = models.CharField(max_length=20, choices=TYPE_CHOICES, unique=True)
+    display_name = models.CharField(max_length=50)
+    
+    def __str__(self):
+        return self.display_name
+
+class Exercise(models.Model):
+    name = models.CharField(max_length=100)
+    exercise_type = models.ForeignKey(ExerciseType, on_delete=models.CASCADE)
+    activity_level = models.ForeignKey(ActivityLevel, on_delete=models.CASCADE)
+    requires_equipment = models.BooleanField(default=False)
+    duration = models.CharField(max_length=20)  # e.g., "30 mins", "2 mins"
+    reps = models.IntegerField(default=0)
+    sets = models.IntegerField(default=1)
+    description = models.TextField(blank=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+    
+    class Meta:
+        unique_together = ['name', 'exercise_type', 'activity_level', 'requires_equipment']
+    
+    def __str__(self):
+        return f"{self.name} ({self.activity_level.display_name})"
 

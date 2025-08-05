@@ -112,7 +112,8 @@
         </div>        
 
         <div class="mt-5">
-            <a href="{% url 'exerciseList' %}" class="btn btn-outline-primary me-2">Edit Exercises</a>
+            {% comment %} <a href="{% url 'exerciseList' %}" class="btn btn-outline-primary me-2">Edit Exercises</a> {% endcomment %}
+            <a href="{% url 'exercise_manager' %}" class="btn btn-outline-primary me-2">Edit Exercises</a>
             <a href="{% url 'faculty_register' %}" class="btn btn-outline-danger">Register Faculty</a>
             <a href="{% url 'admin_interface' %}" class="btn btn-outline-success">Faculty Log</a>
         </div>
