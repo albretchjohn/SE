@@ -1,5 +1,5 @@
 from django.urls import path
-from .views import register_user, home, contact, user_login, logout_view, resources, about, verify_otp, user_dashboard, profiling, faculty_dashboard, the_admin, generate_plan, display_plan, view_exercise_plans, register_faculty, dashboard_faculty_test, user_detail, csspe_dashboard, he_dashboard, resend_otp, user_view_details, user_view_details_d, exercise_data_view, facultyLog, dashboard_view
+from .views import register_user, home, contact, user_login, logout_view, resources, about, verify_otp, user_dashboard, profiling, faculty_dashboard, the_admin, generate_plan, display_plan, view_exercise_plans, register_faculty, dashboard_faculty_test, user_detail, csspe_dashboard, he_dashboard, resend_otp, user_view_details, user_view_details_d, exercise_data_view, facultyLog, dashboard_view, userList, adminUserView
 from . import views
 
 urlpatterns = [
@@ -33,5 +33,7 @@ urlpatterns = [
     path('adminDashboard/', dashboard_view, name='adminDashboard'), #this is actually the admin dashboard
     path('exercises/', views.exercise_manager, name='exercise_manager'),
     path('api/exercises/', views.api_exercises, name='api_exercises'),
+    path('userList/', views.userList, name='userList'),
+    path('adminUserView/<int:user_id>/', views.adminUserView, name='adminUserView'),
     # path('api/exercises/', views.get_exercises, name='get_exercises'),
 ]

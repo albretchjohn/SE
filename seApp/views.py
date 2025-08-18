@@ -9,7 +9,7 @@ from django.utils import timezone
 from datetime import datetime
 from .exercise_data import strength_exercises, cardio_exercises, flexibility_exercises 
 import random
-from django.db.models import Q
+from django.db.models import Q, Count
 from django.core.paginator import Paginator
 from django.db import models
 from django.db.models import OuterRef, Subquery, F, FloatField, ExpressionWrapper
@@ -553,7 +553,10 @@ def user_dashboard(request):
         user_profile = Profile.objects.get(user=request.user)
         
         diet_plan = DietPlan.objects.filter(user=request.user, status='Approved').first()
+        dietPlan = DietPlan.objects.filter(user=request.user)
+        
         exercise_plan = ExercisePlan.objects.filter(user=request.user, status='Approved').first()
+        exercisePlan = ExercisePlan.objects.filter(user=request.user)
         
         weight_entries = WeightEntry.objects.filter(user=request.user).order_by("-date_logged") #comments to ng user
         
@@ -586,6 +589,11 @@ def user_dashboard(request):
         trainerComment = None
         if exercise_plan:
             trainerComment = E_PlanApproval.objects.filter(E_plan=exercise_plan).order_by("-review_date").first()
+            
+        if not ExercisePlan.objects.filter(user=request.user).exists() or not DietPlan.objects.filter(user=request.user).exists():
+            return redirect('profiling')
+
+            
 
         if diet_plan and exercise_plan:
             return render(request, 'user_dashboard.html', {
@@ -794,9 +802,15 @@ def user_view_details_d(request, user_id):
     
 @login_required
 def submit_progress(request):
+    user_profile = Profile.objects.get(user=request.user)
+    weight_entries = WeightEntry.objects.filter(user=request.user).order_by("-date_logged")
+    
     if request.method == "POST":
         weight = request.POST.get('current_weight')
         comment = request.POST.get('comments')
+        # lifestyle = request.POST.get('lifestyle', 'Sedentary')  # Default to 'Sedentary' if not provided
+        lifestyle = request.POST.get('lifestyle')
+        
 
         if weight:
             WeightEntry.objects.create(
@@ -804,6 +818,38 @@ def submit_progress(request):
                 weight=weight,
                 comment=comment
             )
+            
+            current_bmi = None
+            current_bmi_category = None
+            if weight_entries and user_profile.height:
+                current_weight = weight_entries[0].weight
+                height_m = user_profile.height / 100  # convert cm to meters
+                if height_m > 0:
+                    current_bmi = round(current_weight / (height_m ** 2), 2)
+                    
+                    if current_bmi < 18.5:
+                        current_bmi_category = "Underweight"
+                    elif 18.5 <= current_bmi < 25:
+                        current_bmi_category = "Normal"
+                    elif 25 <= current_bmi < 30:
+                        current_bmi_category = "Overweight"
+                    else:
+                        current_bmi_category = "Obese"
+                
+            
+                
+            user_profile.bmi_classification = current_bmi_category
+            user_profile.save()
+            
+            if lifestyle != '':
+                user_profile.activity_level = lifestyle
+                user_profile.save()
+        
+            
+            
+        
+                    
+                       
         return redirect('user_dashboard')  # or wherever you want to redirect after saving
 
     return redirect('user_dashboard')  # fallback if accessed via GET
@@ -843,11 +889,33 @@ def facultyLog(request, id):
 
 
 def dashboard_view(request):
+    underweight_users = Profile.objects.filter(bmi_classification='Underweight').count()
+    normal_users = Profile.objects.filter(bmi_classification='Normal').count()
+    overweight_users = Profile.objects.filter(bmi_classification='Overweight').count()
+    obese_users = Profile.objects.filter(bmi_classification='Obese').count()
     num_faculty = Faculty.objects.count()
     num_user = CustomUser.objects.filter(user_type='user').count()
     users = Profile.objects.all()
     trainer = ExercisePlan.objects.all()
     dietitian = DietPlan.objects.all()
+    
+    # group college department users
+    college_counts = (
+    Profile.objects
+    .values('college_department')
+    .annotate(total=Count('id'))
+    )
+
+    # Ensure order matches your Chart.js labels
+    college_order = [
+        'LAW', 'AGRI', 'CLA', 'ARCH', 'NURS', 'CAIS', 'CCS', 'CFES', 
+        'CCJE', 'CHE', 'COE', 'MED', 'CPADS', 'CSSPE', 'CSM', 'CSWCD', 'CTE'
+    ]
+
+    data_values = []
+    for code in college_order:
+        count = next((item['total'] for item in college_counts if item['college_department'] == code), 0) #find total for each college default 0 siya
+        data_values.append(count)
 
     # Count all exercises (if your structure is nested)
     exercise_count = 0
@@ -908,6 +976,11 @@ def dashboard_view(request):
         'top_users': top_users,
         'trainer': trainer,
         'dietitian': dietitian,
+        'underweight_users': underweight_users,
+        'normal_users': normal_users,
+        'overweight_users': overweight_users,
+        'obese_users': obese_users,
+        'data_values': data_values,
     }
 
     return render(request, 'adminDashboard.html', context)
@@ -916,6 +989,90 @@ def dashboard_view(request):
 
 
 ####################################################################
+
+def userList(request):
+    if request.method == 'POST':
+        search_query = request.POST.get('search_query', '')
+        users = Profile.objects.filter(
+            Q(first_name__icontains=search_query) |
+            Q(last_name__icontains=search_query)
+        )
+    else:
+        # Show all users by default when loading the page
+        users = Profile.objects.all()
+            
+    return render(request, 'userList.html', {'users': users})
+
+def adminUserView(request, user_id): #this is user_view_details_admin
+    try:
+        user_profile = Profile.objects.get(user=user_id)
+        
+        diet_plan = DietPlan.objects.filter(user=user_id, status='Approved').first()
+        exercise_plan = ExercisePlan.objects.filter(user=user_id, status='Approved').first()
+        
+        weight_entries = WeightEntry.objects.filter(user=user_id).order_by("-date_logged") #comments to ng user
+        
+        
+        chart_entries = WeightEntry.objects.filter(user=user_id).order_by("date_logged")
+        dates = [entry.date_logged.strftime("%Y-%m-%d") for entry in chart_entries]
+        weights = [entry.weight for entry in chart_entries]
+        
+        current_bmi = None
+        current_bmi_category = None
+        if weight_entries and user_profile.height:
+            current_weight = weight_entries[0].weight
+            height_m = user_profile.height / 100  # convert cm to meters
+            if height_m > 0:
+                current_bmi = round(current_weight / (height_m ** 2), 2)
+                
+                if current_bmi < 18.5:
+                    current_bmi_category = "Underweight"
+                elif 18.5 <= current_bmi < 25:
+                    current_bmi_category = "Normal"
+                elif 25 <= current_bmi < 30:
+                    current_bmi_category = "Overweight"
+                else:
+                    current_bmi_category = "Obese"                        
+        
+        dietitianComment = None
+        if diet_plan:
+            dietitianComment = D_PlanApproval.objects.filter(D_plan=diet_plan).order_by("-review_date").first()
+            
+        trainerComment = None
+        if exercise_plan:
+            trainerComment = E_PlanApproval.objects.filter(E_plan=exercise_plan).order_by("-review_date").first()
+
+        if diet_plan and exercise_plan:
+            return render(request, 'user_view_details_admin.html', {
+                'user_profile': user_profile,
+                'diet_plan': diet_plan,
+                'exercise_plan': exercise_plan,
+                'weights': weights,
+                'dates': dates,
+                'comments': weight_entries,
+                'dietitianComment': dietitianComment,
+                'trainerComment': trainerComment,
+                'current_bmi': current_bmi,
+                'current_bmi_category': current_bmi_category,
+            })
+        else:
+            messages.info(request, "This user's personalized plans are still under review. Please come again later.")
+
+        return render(request, 'user_view_details_admin.html', {
+            'user_profile': user_profile,
+            'diet_plan': diet_plan,
+            'exercise_plan': exercise_plan,
+            
+        })
+    except Profile.DoesNotExist:
+        messages.error(request, 'Profile not found.')
+        return redirect('profiling')
+    
+    
+    # return render(request, 'user_view_details_admin.html',)
+
+        
+        
 
 
 

@@ -1,0 +1,37 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="{% static 'css/csspe_dashboard_style.css' %}"> 
+    <title>CSSPE Dashboard</title>
+</head>
+<body>
+    <div class="dashboard-container">
+        <a href="{% url 'adminDashboard' %}" class="btn btn-outline-secondary mb-4">← Back</a>
+        <a href="{% url 'logout' %}">Logout</a>
+        <form method="post" class="search-form">
+            {% csrf_token %}
+            <input type="text" name="search_query" placeholder="Search by name" required>
+            <button type="submit">Search</button>
+        </form>
+        {% if users %}
+        <table class="results-table">
+            <tr>
+                <th>Name</th>
+                <th>Department</th>
+                <th>Actions</th>
+            </tr>
+            {% for user in users %}
+            <tr>
+                <td>{{ user.first_name }} {{ user.last_name }}</td>
+                <td>{{ user.college_department }}</td>
+                <td><a href="{% url 'adminUserView' user.user.id %}">View Details</a></td>
+            </tr>
+            {% endfor %}
+        </table>
+        {% endif %}
+    </div>
+</body>
+</html>

@@ -7,13 +7,25 @@
     <title>View User Details</title>
     <link rel="stylesheet" href="{% static 'css/user_view_details_style.css' %}">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+      .list-group-item {
+        background-color: #FCFEDA !important;
+      }
+
+      {% comment %} .accordion-item,
+      .accordion-button,
+      .accordion-body {
+        background-color: #FCFEDA !important;
+      } {% endcomment %}
+    </style>
 </head>
-<body>
-    {% comment %} <a href="{% url 'csspe_dashboard' %}">Back</a> {% endcomment %}
-     <a href="{% url 'csspe_dashboard' %}" class="btn btn-outline-secondary mb-4">
-      ← Back
-    </a>
+<body style="background-color: #FCFEDA;">
+  
     <div class="details-container">
+
+          <a href="{% url 'csspe_dashboard' %}" class="btn btn-outline-secondary mb-4">
+            ← Back
+          </a>
 
         <div class="container my-5">
             <div class="row justify-content-center">
@@ -28,7 +40,7 @@
                     <li class="list-group-item"><strong>Gender:</strong> {{ user_profile.gender }}</li>
                     <li class="list-group-item"><strong>Birthday:</strong> {{ user_profile.birthday }}</li>
                     <li class="list-group-item"><strong>Height:</strong> {{ user_profile.height }} cm</li>
-                    <li class="list-group-item"><strong>Weight:</strong> {{ user_profile.weight }} kg</li>
+                    <li class="list-group-item"><strong>Original Weight:</strong> {{ user_profile.weight }} kg</li>
                     <li class="list-group-item"><strong>BMI:</strong> {{ user_profile.bmi }}</li>
                     <li class="list-group-item"><strong>Body Type:</strong> {{ user_profile.body_type }}</li>
                     <li class="list-group-item"><strong>Activity Level:</strong> {{ user_profile.activity_level }}</li>
@@ -48,7 +60,7 @@
               <div class="card-header bg-success text-white">
                 <h4 class="mb-0">🥗 Diet Plan (Approved)</h4>
               </div>
-              <div class="card-body">
+              <div class="card-body" style="background-color: #FCFEDA;">
                 <p class="card-text fs-5">
                   <strong>Calorie Intake Per Day:</strong> {{ diet_plan.calorie_intake_per_day }} kcal
                 </p>
@@ -69,15 +81,17 @@
 
           <div class="d-flex justify-content-center mt-4">
             <div class="accordion shadow-sm border-start border-4 border-info rounded-3 w-75" id="weightHistoryAccordion">
-              <div class="accordion-item">
+              <div class="accordion-item" id="weightHistorySection">
                 <h2 class="accordion-header" id="headingOne">
-                  <button class="accordion-button collapsed bg-light fw-semibold text-info py-2 px-3" type="button" data-bs-toggle="collapse" data-bs-target="#collapseOne">
+                  <button class="accordion-button collapsed fw-semibold text-info py-2 px-3" type="button" data-bs-toggle="collapse" data-bs-target="#collapseOne" style="background-color: #FCFEDA;">
                     📉 View Weight History
                   </button>
                 </h2>
                 <div id="collapseOne" class="accordion-collapse collapse" data-bs-parent="#weightHistoryAccordion">
                   <div class="accordion-body p-3">
+                    <p><strong>Original Weight:</strong> {{ user_profile.weight }} kg</p>
                     <table class="table table-sm table-striped table-bordered mb-0">
+                      
                       <thead class="table-info text-center">
                         <tr>
                           <th>Date</th>
@@ -97,59 +111,70 @@
                           <td colspan="3" class="text-center text-muted">No history available.</td>
                         </tr>
                         {% endfor %}
+                        <button onclick="downloadPDF('weightHistorySection', 'weight_history.pdf')" class="btn btn-outline-primary mt-2">Download Weight History</button>
                       </tbody>
                     </table>
+                    {% comment %} <button onclick="downloadPDF('weightHistorySection', 'weight_history.pdf')" class="btn btn-outline-primary mt-2">Download Weight History</button> {% endcomment %}
                   </div>
                 </div>
               </div>
             </div>
           </div>
+
+          <div id="weightChartSection" style="width: 100%; max-width: 800px; margin: auto; padding: 16px;">
+            <button onclick="downloadPDF('weightChartSection', 'weight_chart.pdf')" class="btn btn-outline-primary mt-3">
+              Download Weight Chart
+            </button>
+            <h5 class="mt-4">Weight Progress</h5>
           
-        
-          <h5 class="mt-4">Weight Progress</h5>
-          <canvas id="weightChart" height="100"></canvas>
-  
-          <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-          <script>
-            const ctx = document.getElementById('weightChart').getContext('2d');
-            const weightChart = new Chart(ctx, {
-              type: 'line',
-              data: {
-                labels: {{ dates|safe }},
-                datasets: [{
-                  label: 'Weight (kg)',
-                  data: {{ weights|safe }},
-                  borderColor: 'rgba(54, 162, 235, 1)',
-                  backgroundColor: 'rgba(54, 162, 235, 0.2)',
-                  tension: 0.3,
-                  fill: true
-                }]
-              },
-              options: {
-                responsive: true,
-                scales: {
-                  x: {
-                    title: {
-                      display: true,
-                      text: 'Date'
-                    }
-                  },
-                  y: {
-                    title: {
-                      display: true,
-                      text: 'Weight (kg)'
+            <div style="position: relative; width: 100%; height: 300px;">
+              <canvas id="weightChart"></canvas>
+            </div>
+          
+            <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+            <script>
+              const ctx = document.getElementById('weightChart').getContext('2d');
+              const weightChart = new Chart(ctx, {
+                type: 'line',
+                data: {
+                  labels: {{ dates|safe }},
+                  datasets: [{
+                    label: 'Weight (kg)',
+                    data: {{ weights|safe }},
+                    borderColor: 'rgba(54, 162, 235, 1)',
+                    backgroundColor: 'rgba(54, 162, 235, 0.2)',
+                    tension: 0.3,
+                    fill: true
+                  }]
+                },
+                options: {
+                  responsive: true,
+                  maintainAspectRatio: false,
+                  scales: {
+                    x: {
+                      title: {
+                        display: true,
+                        text: 'Date'
+                      }
                     },
-                    beginAtZero: false
+                    y: {
+                      title: {
+                        display: true,
+                        text: 'Weight (kg)'
+                      },
+                      beginAtZero: false
+                    }
                   }
                 }
-              }
-            });
-          </script>
+              });
+            </script>
+          </div>
+          
           
         
           <div class="container my-5">
               <h2 class="mb-4 text-center">Exercise Plan</h2>
-              <form method="post" class="bg-light p-4 rounded shadow">
+              <form method="post" class=" p-4 rounded shadow" style="background-color: #FCFEDA;">
                 {% csrf_token %}
             
                 <div class="accordion" id="exerciseAccordion">
@@ -218,6 +243,9 @@
               </div>
             </form>
           </div>
+          </div>
+        </div>
+      
         
 
           
@@ -227,7 +255,7 @@
 
 
 
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
 <script>
 document.addEventListener('DOMContentLoaded', function() {
   // For each day's accordion body
@@ -281,6 +309,42 @@ document.addEventListener('DOMContentLoaded', function() {
     btn.closest('.row.g-3').remove();
   }
 });
+</script>
+
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.9.3/html2pdf.bundle.min.js"></script>
+
+
+<script>
+  function downloadPDF(sectionId, filename) {
+    const element = document.getElementById(sectionId);
+    
+    // Save original styles
+    const originalWidth = element.style.width;
+    const originalMaxWidth = element.style.maxWidth;
+
+    // Temporarily stretch section to match PDF width
+    element.style.width = "1000px";      // Make wide enough for landscape
+    element.style.maxWidth = "none";     // Disable any Bootstrap container limits
+
+    const opt = {
+      margin: 0.2,
+      filename: filename,
+      image: { type: 'jpeg', quality: 0.98 },
+      html2canvas: { scale: 3, useCORS: true },
+      jsPDF: { unit: 'in', format: 'letter', orientation: 'landscape' }
+    };
+
+    html2pdf()
+      .from(element)
+      .set(opt)
+      .save()
+      .then(() => {
+        // Restore original styles after export
+        element.style.width = originalWidth;
+        element.style.maxWidth = originalMaxWidth;
+      });
+  }
 </script>
 
 </body>

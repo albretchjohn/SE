@@ -51,6 +51,7 @@ class Profile(models.Model):
     height = models.FloatField()
     weight = models.FloatField()
     bmi = models.FloatField(default=0)
+    bmi_classification = models.TextField()
     body_type = models.CharField(max_length=20)
     activity_level = models.CharField(max_length=20)
     equipment_access = models.TextField()

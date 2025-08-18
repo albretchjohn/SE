@@ -32,10 +32,34 @@
                     <option value="O">Other</option>
                 </select>
 
+                {% comment %} <label for="college_department">College Department:</label>
+                <input type="text" name="college_department" placeholder="ex. college of computing studies" required> {% endcomment %}
                 <label for="college_department">College Department:</label>
-                <input type="text" name="college_department" placeholder="ex. college of computing studies" required>
+                <select name="college_department" id="college_department" required>
+                    <option value="" disabled selected>Select a department</option>
+                    <option value="LAW">College of Law</option>
+                    <option value="AGRI">College of Agriculture</option>
+                    <option value="CLA">College of Liberal Arts</option>
+                    <option value="ARCH">College of Architecture</option>
+                    <option value="NURS">College of Nursing</option>
+                    <option value="CAIS">College of Asian &amp; Islamic Studies</option>
+                    <option value="CCS">College of Computing Studies</option>
+                    <option value="CFES">College of Forestry &amp; Environmental Studies</option>
+                    <option value="CCJE">College of Criminal Justice Education</option>
+                    <option value="CHE">College of Home Economics</option>
+                    <option value="COE">College of Engineering</option>
+                    <option value="MED">College of Medicine</option>
+                    <option value="CPADS">College of Public Administration &amp; Development Studies</option>
+                    <option value="CSSPE">College of Sports Science &amp; Physical Education</option>
+                    <option value="CSM">College of Science and Mathematics</option>
+                    <option value="CSWCD">College of Social Work &amp; Community Development</option>
+                    <option value="CTE">College of Teacher Education</option>
+                </select>
                 
                 <button type="button" onclick="nextStep()">Next</button>
+                <h5 style="text-align: center; margin-top: 10px;">
+                    Already have a plan? <a href="{% url 'display_plan' %}">click here</a>
+                </h5>
             </div>
 
             <div class="form-step hidden">
@@ -115,6 +139,9 @@
                 <button type="submit">Submit</button>
 
                 
+                <h5 style="text-align: center; margin-top: 10px;">
+                    Already have a plan? <a href="{% url 'display_plan' %}">click here</a>
+                </h5>
             </div>
         </form>
     </div>
