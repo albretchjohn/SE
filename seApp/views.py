@@ -759,6 +759,7 @@ def user_view_details(request, user_id):
 @login_required
 def user_view_details_d(request, user_id):
     user_profile = get_object_or_404(Profile, user_id=user_id)
+    exercise_plan = get_object_or_404(ExercisePlan, user_id=user_id)
     diet_plan = get_object_or_404(DietPlan, user_id=user_id)
     
     user = user_profile.user
@@ -797,6 +798,7 @@ def user_view_details_d(request, user_id):
         'comments': comments,
         'dates': dates,
         'weights': weights,
+        'exercise_plan': exercise_plan,
         # 'dietitianComment': dietitianComment
     })
     

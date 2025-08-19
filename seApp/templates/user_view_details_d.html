@@ -228,6 +228,69 @@
             </div>
           </div>
         </div>
+
+
+
+
+          <!-- EXERCISE PLAN FORM -->
+          <div class="container my-5">
+              <h2 class="mb-4 text-center">Exercise Plan</h2>
+              <form method="post" class=" p-4 rounded shadow" style="background-color: #FCFEDA;">
+                {% csrf_token %}
+            
+                <div class="accordion" id="exerciseAccordion">
+                  {% for day, exercises in exercise_plan.routine.items %}
+                  <div class="accordion-item">
+                    <h2 class="accordion-header" id="heading{{ forloop.counter }}">
+                      <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapse{{ forloop.counter }}" aria-expanded="false" aria-controls="collapse{{ forloop.counter }}">
+                        {% comment %} {{ day|capfirst }} {% endcomment %} Day {{ forloop.counter }}
+                      </button>
+                    </h2>
+                    <div id="collapse{{ forloop.counter }}" class="accordion-collapse collapse" aria-labelledby="heading{{ forloop.counter }}" data-bs-parent="#exerciseAccordion">
+                      <div class="accordion-body" id="setting">
+                        {% for exercise in exercises %}
+                          <div class="row g-3 mb-3" id="Gustave">
+                            <div class="col-md-6">
+                              <label class="form-label">Exercise Name</label>
+                              <input type="text" class="form-control" name="routine[{{ day }}][{{ forloop.counter0 }}][name]" value="{{ exercise.name }}">
+                            </div>
+                            <div class="col-md-6">
+                              <label class="form-label">Duration</label>
+                              <input type="text" class="form-control" name="routine[{{ day }}][{{ forloop.counter0 }}][duration]" value="{{ exercise.duration }}">
+                            </div>
+                            <div class="col-md-6">
+                              <label class="form-label">Reps</label>
+                              <input type="number" class="form-control" name="routine[{{ day }}][{{ forloop.counter0 }}][reps]" value="{{ exercise.reps }}">
+                            </div>
+                            <div class="col-md-6">
+                              <label class="form-label">Sets</label>
+                              <input type="number" class="form-control" name="routine[{{ day }}][{{ forloop.counter0 }}][sets]" value="{{ exercise.sets }}">
+                            </div>
+                             {% comment %} <div class="text-end">
+                              <button type="button" class="btn btn-danger" onclick="removeExercise(this)">➖ Remove This Exercise</button>
+                            </div>                              {% endcomment %}
+                          </div>
+                        {% endfor %}
+                        {% comment %} <div class="text-center" id="exerciseAdd">
+                          <button type="button" class="btn btn-primary" onclick="addExercise(this)">➕ Add Exercise</button>
+                        </div>  {% endcomment %}
+                    </div>               
+                  </div>
+                  {% endfor %}
+                </div>
+            
+
+
+
+
+            
+
+          
+
+            </form>
+          </div>
+          </div>        
+        
       
 
 
