@@ -180,7 +180,7 @@ def register_faculty(request):
 
         messages.success(request, 'Faculty registered successfully.')
         # return redirect('admin_interface')
-        return redirect('home')
+        return redirect('adminDashboard')
 
     return render(request, 'faculty_register.html')
 
