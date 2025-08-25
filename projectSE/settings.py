@@ -134,13 +134,28 @@ WSGI_APPLICATION = 'projectSE.wsgi.application'
 #     }
 # }
 
+# DATABASES = {
+#     'default': {
+#         'ENGINE': 'django.db.backends.postgresql',
+#         'NAME': 'wellness_wmsu',
+#         'USER': 'wellness_wmsu_user',
+#         'PASSWORD': 'QygsqpGvnAPzie0A22HbvM13BErUAUZX',
+#         'HOST': 'dpg-d20gbjre5dus73dcrv90-a.oregon-postgres.render.com',
+#         'PORT': '5432',
+#         'OPTIONS': {
+#             'sslmode': 'require',
+#             # 'options': '-c search_path=db_se,public'
+#         }
+#     }
+# }
+
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql',
-        'NAME': 'wellness_wmsu',
-        'USER': 'wellness_wmsu_user',
-        'PASSWORD': 'QygsqpGvnAPzie0A22HbvM13BErUAUZX',
-        'HOST': 'dpg-d20gbjre5dus73dcrv90-a.oregon-postgres.render.com',
+        'NAME': 'wmsuwellness_7q65',
+        'USER': 'wmsuwellness_7q65_user',
+        'PASSWORD': 'iHoTUrGaRhGiX6ofPlJ359DIDqYJGmlO',
+        'HOST': 'dpg-d2lvanruibrs73flnej0-a.oregon-postgres.render.com',
         'PORT': '5432',
         'OPTIONS': {
             'sslmode': 'require',
