@@ -5,297 +5,680 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>View User Details and Diet Plan</title>
-    <link rel="stylesheet" href="{% static 'css/user_view_details_style.css' %}">
+    {% comment %} <link rel="stylesheet" href="{% static 'css/user_view_details_style.css' %}"> {% endcomment %}
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
 
     <style>
+      :root {
+        --primary-red: #B91C1C;
+        --primary-red-dark: #991B1B;
+        --primary-red-light: #DC2626;
+        --primary-red-light-history: #fef2f2;
+        --secondary-red: #FEE2E2;
+        --accent-red: #EF4444;
+        --text-dark: #1F2937;
+        --text-light: #6B7280;
+        --bg-light: #F9FAFB;
+        --border-light: #E5E7EB;
+        --white: #ffffff;
+      }
+
+      body {
+        background: linear-gradient(135deg, #F9FAFB 0%, #F3F4F6 100%);
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        color: var(--text-dark);
+      }
+
+      .accordion-body {
+        padding: 1.5rem;
+        background: var(--white);
+      }
+
+      .dashboard-header {
+        background: linear-gradient(135deg, var(--primary-red) 0%, var(--primary-red-dark) 100%);
+        color: white;
+        padding: 1.5rem 0;
+        margin-bottom: 2rem;
+        box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+      }
+
+      .card {
+        border: none;
+        border-radius: 12px;
+        box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+        transition: all 0.3s ease;
+        margin-bottom: 2rem;
+        overflow: hidden;
+      }
+
+      .card:hover {
+        box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+        transform: translateY(-2px);
+      } 
+
+      .card-header {
+        background: linear-gradient(135deg, var(--primary-red) 0%, var(--primary-red-light) 100%);
+        border: none;
+        border-radius: 12px 12px 0 0 !important;
+        padding: 1rem 1.5rem;
+      }
+
+      .card-header h4 {
+        font-weight: 600;
+        margin: 0;
+        {% comment %} display: flex; {% endcomment %}
+        align-items: center;
+        gap: 0.5rem;
+      }
+
       .list-group-item {
-        background-color: #FCFEDA !important;
+        background-color: white !important;
+        border: 1px solid var(--border-light);
+        padding: 1rem 1.5rem;
+        transition: background-color 0.2s ease;
+      }
+
+     .list-group-item:hover {
+        background-color: var(--secondary-red) !important;
+      }
+
+      .list-group-item:nth-child(even) {
+        background-color: #FAFAFA !important;
+      }
+
+      .btn-outline-secondary {
+        border-color: var(--primary-red);
+        color: var(--primary-red);
+        transition: all 0.3s ease;
+      }
+
+      .btn-outline-secondary:hover {
+        background-color: var(--primary-red);
+        border-color: var(--primary-red);
+        color: white;
+      }
+
+      {% comment %} .accordion-button {
+        background-color: white !important;
+        color: var(--primary-red) !important;
+        border: none;
+        font-weight: 600;
+        padding: 1rem 1.5rem;
+      } {% endcomment %}
+
+
+      {% comment %} ================================ {% endcomment %}
+
+
+      .accordion-button {
+        background: var(--white) !important;
+        color: var(--text-dark);
+        border: none;
+        font-weight: 600;
+        padding: 1.25rem 1.5rem;
+        font-size: 1rem;
+        transition: all 0.3s ease;
+      }
+
+      .accordion-button:hover {
+        background: var(--primary-red-light-history) !important;
+        color: var(--primary-red);
+        transform: translateX(5px);
+      }
+      .accordion-button:not(.collapsed) {
+        background: var(--primary-red-light) !important;
+        color: var(--primary-red);
+      }
+
+      .accordion-button:not(.collapsed) {
+        background-color: var(--secondary-red) !important;
+        color: var(--primary-red-dark) !important;
+        box-shadow: none;
+      }
+
+      {% comment %} ========================== {% endcomment %}
+
+      .accordion-button:focus {
+        box-shadow: 0 0 0 0.25rem rgba(185, 28, 28, 0.25);
+      }
+
+      {% comment %} .table-info {
+        background-color: var(--secondary-red) !important;
+        color: var(--primary-red-dark) !important;
+      } {% endcomment %}
+
+      .table-info th {
+        background: var(--primary-red) !important;
+        color: var(--white) !important;
+      }
+
+      .table thead th {
+        background: var(--primary-red);
+        color: var(--white);
+        border: none;
+        font-weight: 600;
+        padding: 1rem;
+      }
+
+      .table tbody tr {
+        transition: all 0.2s ease;
+      }
+
+      .table tbody tr:hover {
+        background: var(--primary-red-history) !important;
+        transform: scale(1.01);
+      }
+
+      .table tbody td {
+        padding: 0.75rem 1rem;
+      }
+
+
+      {% comment %} weight chart section {% endcomment %}
+
+      #weightChartSection {
+        width: 100%;
+        max-width: 900px;
+        margin: 2rem auto;
+        padding: 2rem;
+        background: var(--white);
+        border-radius: 12px;
+        box-shadow: 0 4px 6px rgba(0,0,0,0.07);
+        transition: all 0.3s ease;
+      }
+
+      #weightChartSection:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 8px 15px rgba(0,0,0,0.12);
+      }
+
+      #weightChartSection h5 {
+        color: var(--text-dark);
+        font-weight: 700;
+        margin-bottom: 1.5rem;
+      }
+      
+
+      .btn-outline-primary {
+        border-color: var(--primary-red);
+        color: var(--primary-red);
+      }
+
+      .btn-outline-primary:hover {
+        background-color: var(--primary-red);
+        border-color: var(--primary-red);
+        color: white;
+      }
+
+      .bg-success {
+        background: linear-gradient(135deg, var(--primary-red) 0%, var(--primary-red-light) 100%) !important;
+      }
+
+      .btn-success {
+        background: linear-gradient(135deg, var(--primary-red) 0%, var(--primary-red-light) 100%);
+        border: none;
+        padding: 0.75rem 1.5rem;
+        font-weight: 600;
+        transition: all 0.3s ease;
+      }
+
+      .btn-success:hover {
+        background: linear-gradient(135deg, var(--primary-red-dark) 0%, var(--primary-red) 100%);
+        transform: translateY(-1px);
+        box-shadow: 0 4px 8px rgba(185, 28, 28, 0.3);
+      }
+
+      .form-control, .form-select {
+        border: 2px solid var(--border-light);
+        border-radius: 8px;
+        padding: 0.75rem;
+        transition: all 0.3s ease;
+      }
+
+      .form-control:focus, .form-select:focus {
+        border-color: var(--primary-red);
+        box-shadow: 0 0 0 0.25rem rgba(185, 28, 28, 0.25);
+      }
+
+      .form-label {
+        font-weight: 600;
+        color: var(--text-dark);
+        margin-bottom: 0.5rem;
+      }
+
+      .border-info {
+        border-color: var(--primary-red) !important;
+      }
+
+      .text-info {
+        color: var(--primary-red) !important;
+      }
+
+      .profile-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 0;
+      }
+
+      @media (max-width: 768px) {
+        .profile-grid {
+          grid-template-columns: 1fr;
+        }
       }
     </style>
 </head>
-<body style="background-color: #FCFEDA;">
+<body>
+    <div class="dashboard-header">
+      <div class="container">
+        <div class="row align-items-center">
+          <div class="col">
+            <h2 class="mb-0"><i class="fas fa-heartbeat me-2"></i>HE Health Dashboard</h2>
+            <p class="mb-0 opacity-75">Health & Wellness Management</p>
+          </div>
+        </div>
+      </div>
+    </div>
     
-        <div class="container mt-5">
-          <a href="{% url 'he_dashboard' %}" class="btn btn-outline-secondary mb-4">
-            ← Back
-          </a>
-      
-          <!-- USER DETAILS CARD -->
-          <div class="container my-5">
-            <div class="row justify-content-center">
-              <div class="col-lg-8">
-                <div class="card shadow border-0">
-                  <div class="card-header bg-danger text-white text-center">
-                    <h4 class="mb-0">👤 User Details</h4>
-                  </div>
-                  <ul class="list-group list-group-flush">
-                    <li class="list-group-item"><strong>Name:</strong> {{ user_profile.first_name }} {{ user_profile.last_name }}</li>
-                    <li class="list-group-item"><strong>Department:</strong> {{ user_profile.college_department }}</li>
-                    <li class="list-group-item"><strong>Gender:</strong> {{ user_profile.gender }}</li>
-                    <li class="list-group-item"><strong>Birthday:</strong> {{ user_profile.birthday }}</li>
-                    <li class="list-group-item"><strong>Height:</strong> {{ user_profile.height }} cm</li>
-                    <li class="list-group-item"><strong>Original Weight:</strong> {{ user_profile.weight }} kg</li>
-                    <li class="list-group-item"><strong>BMI:</strong> {{ user_profile.bmi }}</li>
-                    <li class="list-group-item"><strong>Body Type:</strong> {{ user_profile.body_type }}</li>
-                    <li class="list-group-item"><strong>Activity Level:</strong> {{ user_profile.activity_level }}</li>
-                    <li class="list-group-item"><strong>Health Conditions:</strong> {{ user_profile.health_condition }}</li>
-                    <li class="list-group-item"><strong>Allergies:</strong> {{ user_profile.allergies }}</li>
-                    <li class="list-group-item"><strong>Injuries:</strong> {{ user_profile.injuries }}</li>
-                  </ul>
-                </div>
-              </div>
-            </div>
-          </div>
-
-          <div class="d-flex justify-content-center mt-4">
-            <div class="accordion shadow-sm border-start border-4 border-info rounded-3 w-75" id="weightHistoryAccordion">
-              <div class="accordion-item" id="weightHistorySection">
-                <h2 class="accordion-header" id="headingOne">
-                  <button class="accordion-button collapsed  fw-semibold text-info py-2 px-3" type="button" data-bs-toggle="collapse" data-bs-target="#collapseOne" style="background-color: #FCFEDA;">
-                    📉 View Weight History
-                  </button>
-                </h2>
-                <div id="collapseOne" class="accordion-collapse collapse" data-bs-parent="#weightHistoryAccordion">
-                  <div class="accordion-body p-3">
-                    <p><strong>Original Weight:</strong> {{ user_profile.weight }} kg</p>
-                    <table class="table table-sm table-striped table-bordered mb-0">
-                      
-                      <thead class="table-info text-center">
-                        <tr>
-                          <th>Date</th>
-                          <th>Weight (kg)</th>
-                          <th>Comment</th>
-                        </tr>
-                      </thead>
-                      <tbody>
-                        {% for entry in comments %}
-                        <tr class="text-center">
-                          <td>{{ entry.date_logged|date:"Y-m-d" }}</td>
-                          <td>{{ entry.weight }}</td>
-                          <td>{{ entry.comment|default:"-" }}</td>
-                        </tr>
-                        {% empty %}
-                        <tr>
-                          <td colspan="3" class="text-center text-muted">No history available.</td>
-                        </tr>
-                        {% endfor %}
-                        <button onclick="downloadPDF('weightHistorySection', 'weight_history.pdf')" class="btn btn-outline-primary mt-2">Download Weight History</button>
-                      </tbody>
-                    </table>
-                    {% comment %} <button onclick="downloadPDF('weightHistorySection', 'weight_history.pdf')" class="btn btn-outline-primary mt-2">Download Weight History</button> {% endcomment %}
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-
-          {% comment %} <h5 class="mt-4">Weight Progress</h5>
-          <canvas id="weightChart" height="100"></canvas>
+    <div class="container mt-5">
+      <a href="{% url 'he_dashboard' %}" class="btn btn-outline-secondary mb-4">
+        <i class="fas fa-arrow-left me-2"></i>Back to Dashboard
+      </a>
   
-          <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-          <script>
-            const ctx = document.getElementById('weightChart').getContext('2d');
-            const weightChart = new Chart(ctx, {
-              type: 'line',
-              data: {
-                labels: {{ dates|safe }},
-                datasets: [{
-                  label: 'Weight (kg)',
-                  data: {{ weights|safe }},
-                  borderColor: 'rgba(54, 162, 235, 1)',
-                  backgroundColor: 'rgba(54, 162, 235, 0.2)',
-                  tension: 0.3,
-                  fill: true
-                }]
-              },
-              options: {
-                responsive: true,
-                scales: {
-                  x: {
-                    title: {
-                      display: true,
-                      text: 'Date'
-                    }
-                  },
-                  y: {
-                    title: {
-                      display: true,
-                      text: 'Weight (kg)'
-                    },
-                    beginAtZero: false
-                  }
-                }
-              }
-            });
-          </script> {% endcomment %}
-
-        <div id="weightChartSection" style="width: 100%; max-width: 800px; margin: auto; padding: 16px;">
-          <button onclick="downloadPDF('weightChartSection', 'weight_chart.pdf')" class="btn btn-outline-primary mt-3">
-            Download Weight Chart
-          </button>
-          <h5 class="mt-4">Weight Progress</h5>
-        
-          <div style="position: relative; width: 100%; height: 300px;">
-            <canvas id="weightChart"></canvas>
-          </div>
-        
-          <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-          <script>
-            const ctx = document.getElementById('weightChart').getContext('2d');
-            const weightChart = new Chart(ctx, {
-              type: 'line',
-              data: {
-                labels: {{ dates|safe }},
-                datasets: [{
-                  label: 'Weight (kg)',
-                  data: {{ weights|safe }},
-                  borderColor: 'rgba(54, 162, 235, 1)',
-                  backgroundColor: 'rgba(54, 162, 235, 0.2)',
-                  tension: 0.3,
-                  fill: true
-                }]
-              },
-              options: {
-                responsive: true,
-                maintainAspectRatio: false,
-                scales: {
-                  x: {
-                    title: {
-                      display: true,
-                      text: 'Date'
-                    }
-                  },
-                  y: {
-                    title: {
-                      display: true,
-                      text: 'Weight (kg)'
-                    },
-                    beginAtZero: false
-                  }
-                }
-              }
-            });
-          </script>
-        </div>
-      
-          <!-- DIET PLAN FORM -->
-          <div class="card shadow mt-4" style="background-color: #FCFEDA;">
-            <div class="card-header bg-success text-white">
-              <h4 class="mb-0">🥗 Diet Plan</h4>
-            </div>
-            <div class="card-body">
-              <form method="post">
-                {% csrf_token %}
-      
-                <div class="mb-3">
-                  <label class="form-label">Calorie Intake Per Day</label>
-                  <input type="number" step="1" class="form-control" name="calorie_intake_per_day" value="{{ diet_plan.calorie_intake_per_day|floatformat:0 }}">
-                </div>
-      
-                <div class="mb-3">
-                  <label class="form-label">Carbs Per Meal (g)</label>
-                  <input type="number" step="1" class="form-control" name="carbs_per_meal" value="{{ diet_plan.carbs_per_meal|floatformat:0 }}">
-                </div>
-      
-                <div class="mb-3">
-                  <label class="form-label">Fats Per Meal (g)</label>
-                  <input type="number" step="1" class="form-control" name="fats_per_meal" value="{{ diet_plan.fats_per_meal|floatformat:0 }}">
-                </div>
-      
-                <div class="mb-3">
-                  <label class="form-label">Protein Per Meal (g)</label>
-                  <input type="number" step="1" class="form-control" name="protein_per_meal" value="{{ diet_plan.protein_per_meal|floatformat:0 }}">
-                </div>
-      
-                <div class="mb-3">
-                  <label class="form-label">Status</label>
-                  <select name="status" class="form-select">
-                    <option value="Pending" {% if diet_plan.status == 'Pending' %}selected{% endif %}>Pending</option>
-                    <option value="Approved" {% if diet_plan.status == 'Approved' %}selected{% endif %}>Approved</option>
-                    <option value="Rejected" {% if diet_plan.status == 'Rejected' %}selected{% endif %}>Rejected</option>
-                  </select>
-                  <h5>Last Reviewed by: {{ approved_by }}</h5>
-                </div>
-      
-                <div class="mb-3">
-                  <label class="form-label">Review Comments</label>
-                  <textarea class="form-control" name="review_comments" rows="4"></textarea>
-                </div>
-      
-                <button type="submit" class="btn btn-success w-100">💾 Save Changes</button>
-              </form>
-            </div>
-          </div>
-        </div>
-
-
-
-
-          <!-- EXERCISE PLAN FORM -->
-          <div class="container my-5">
-              <h2 class="mb-4 text-center">Exercise Plan</h2>
-              <form method="post" class=" p-4 rounded shadow" style="background-color: #FCFEDA;">
-                {% csrf_token %}
-            
-                <div class="accordion" id="exerciseAccordion">
-                  {% for day, exercises in exercise_plan.routine.items %}
-                  <div class="accordion-item">
-                    <h2 class="accordion-header" id="heading{{ forloop.counter }}">
-                      <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapse{{ forloop.counter }}" aria-expanded="false" aria-controls="collapse{{ forloop.counter }}">
-                        {% comment %} {{ day|capfirst }} {% endcomment %} Day {{ forloop.counter }}
-                      </button>
-                    </h2>
-                    <div id="collapse{{ forloop.counter }}" class="accordion-collapse collapse" aria-labelledby="heading{{ forloop.counter }}" data-bs-parent="#exerciseAccordion">
-                      <div class="accordion-body" id="setting">
-                        {% for exercise in exercises %}
-                          <div class="row g-3 mb-3" id="Gustave">
-                            <div class="col-md-6">
-                              <label class="form-label">Exercise Name</label>
-                              <input type="text" class="form-control" name="routine[{{ day }}][{{ forloop.counter0 }}][name]" value="{{ exercise.name }}">
-                            </div>
-                            <div class="col-md-6">
-                              <label class="form-label">Duration</label>
-                              <input type="text" class="form-control" name="routine[{{ day }}][{{ forloop.counter0 }}][duration]" value="{{ exercise.duration }}">
-                            </div>
-                            <div class="col-md-6">
-                              <label class="form-label">Reps</label>
-                              <input type="number" class="form-control" name="routine[{{ day }}][{{ forloop.counter0 }}][reps]" value="{{ exercise.reps }}">
-                            </div>
-                            <div class="col-md-6">
-                              <label class="form-label">Sets</label>
-                              <input type="number" class="form-control" name="routine[{{ day }}][{{ forloop.counter0 }}][sets]" value="{{ exercise.sets }}">
-                            </div>
-                             {% comment %} <div class="text-end">
-                              <button type="button" class="btn btn-danger" onclick="removeExercise(this)">➖ Remove This Exercise</button>
-                            </div>                              {% endcomment %}
-                          </div>
-                        {% endfor %}
-                        {% comment %} <div class="text-center" id="exerciseAdd">
-                          <button type="button" class="btn btn-primary" onclick="addExercise(this)">➕ Add Exercise</button>
-                        </div>  {% endcomment %}
-                    </div>               
+      <!-- USER DETAILS CARD -->
+      <div class="container">
+        <div class="row justify-content-center">
+          <div class="col-lg-10">
+            <div class="card">
+              <div class="card-header text-center">
+                <h4 class="mb-0 text-white"><i class="fas fa-user me-2"></i>User Profile Details</h4>
+              </div>
+              <div class="card-body">
+                <div class="row g-3">
+                  <div class="col-md-6">
+                    <div class="list-group list-group-flush">
+                      <div class="list-group-item"><strong>Name:</strong> {{ user_profile.first_name }} {{ user_profile.last_name }}</div>
+                      <div class="list-group-item"><strong>Department:</strong> {{ user_profile.college_department }}</div>
+                      <div class="list-group-item"><strong>Gender:</strong> {{ user_profile.gender }}</div>
+                      <div class="list-group-item"><strong>Birthday:</strong> {{ user_profile.birthday }}</div>
+                      <div class="list-group-item"><strong>Height:</strong> {{ user_profile.height }} cm</div>
+                      <div class="list-group-item"><strong>Original Weight:</strong> {{ user_profile.weight }} kg</div>
+                    </div>
                   </div>
-                  {% endfor %}
+                  <div class="col-md-6">
+                    <div class="list-group list-group-flush">
+                      <div class="list-group-item"><strong>BMI:</strong> {{ user_profile.bmi }}</div>
+                      <div class="list-group-item"><strong>Body Type:</strong> {{ user_profile.body_type }}</div>
+                      <div class="list-group-item"><strong>Activity Level:</strong> {{ user_profile.activity_level }}</div>
+                      <div class="list-group-item"><strong>Health Conditions:</strong> {{ user_profile.health_condition }}</div>
+                      <div class="list-group-item"><strong>Allergies:</strong> {{ user_profile.allergies }}</div>
+                      <div class="list-group-item"><strong>Injuries:</strong> {{ user_profile.injuries }}</div>
+                    </div>
+                  </div>
                 </div>
-            
-
-
-
-
-            
-
-          
-
-            </form>
+              </div>
+            </div>
           </div>
-          </div>        
-        
+        </div>
+      </div>
+
+      {% comment %} <div class="d-flex justify-content-center mt-4">
+        <div class="accordion shadow-sm border-start border-4 rounded-3 w-75" id="weightHistoryAccordion" style="border-color: var(--primary-red) !important;">
+          <div class="accordion-item" id="weightHistorySection">
+            <h2 class="accordion-header" id="headingOne">
+              <button class="accordion-button collapsed fw-semibold py-2 px-3" type="button" data-bs-toggle="collapse" data-bs-target="#collapseOne">
+                <i class="fas fa-chart-line me-2"></i>View Weight History
+              </button>
+            </h2>
+            <div id="collapseOne" class="accordion-collapse collapse" data-bs-parent="#weightHistoryAccordion">
+              <div class="accordion-body p-3">
+                <p><strong>Original Weight:</strong> {{ user_profile.weight }} kg</p>
+                <table class="table table-sm table-striped table-bordered mb-0">
+                  <thead class="table-info text-center">
+                    <tr>
+                      <th>Date</th>
+                      <th>Weight (kg)</th>
+                      <th>Comment</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {% for entry in comments %}
+                    <tr class="text-center">
+                      <td>{{ entry.date_logged|date:"Y-m-d" }}</td>
+                      <td>{{ entry.weight }}</td>
+                      <td>{{ entry.comment|default:"-" }}</td>
+                    </tr>
+                    {% empty %}
+                    <tr>
+                      <td colspan="3" class="text-center text-muted">No history available.</td>
+                    </tr>
+                    {% endfor %}
+                    <button onclick="downloadPDF('weightHistorySection', 'weight_history.pdf')" class="btn btn-outline-primary mt-2">
+                      <i class="fas fa-download me-2"></i>Download Weight History
+                    </button>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div> {% endcomment %}
+
+      <div class="d-flex justify-content-center mt-4">
+        <div class="accordion shadow border-start border-4 rounded-3 w-100" style="max-width: 900px; border-color: var(--primary-red) !important;">
+          <div class="accordion-item" id="weightHistorySection">
+            <h2 class="accordion-header" id="headingOne">
+              <button class="accordion-button collapsed fw-semibold py-2 px-3" type="button" data-bs-toggle="collapse" data-bs-target="#collapseOne">
+                <i class="fas fa-chart-line me-2"></i>View Weight History
+              </button>
+            </h2>
+            <div id="collapseOne" class="accordion-collapse collapse" data-bs-parent="#weightHistoryAccordion">
+              <div class="accordion-body" style="background: var(--white);">
+                <p class="mb-3"><strong>Original Weight:</strong> {{ user_profile.weight }} kg</p>
+                <table class="table table-striped table-bordered mb-3">
+                  <thead class="table-info text-center">
+                    <tr>
+                      <th>Date</th>
+                      <th>Weight (kg)</th>
+                      <th>Comment</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {% for entry in comments %}
+                    <tr class="text-center">
+                      <td>{{ entry.date_logged|date:"Y-m-d" }}</td>
+                      <td>{{ entry.weight }}</td>
+                      <td>{{ entry.comment|default:"-" }}</td>
+                    </tr>
+                    {% empty %}
+                    <tr>
+                      <td colspan="3" class="text-center text-muted">No history available.</td>
+                    </tr>
+                    {% endfor %}
+                  </tbody>
+                </table>
+                <button onclick="downloadPDF('weightHistorySection', 'weight_history.pdf')" class="btn btn-outline-primary mt-3">
+                  <i class="fas fa-download me-2"></i>Download Weight History
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {% comment %} <div id="weightChartSection" style="width: 100%; max-width: 800px; margin: auto; padding: 16px;">
+        <button onclick="downloadPDF('weightChartSection', 'weight_chart.pdf')" class="btn btn-outline-primary mt-3">
+          <i class="fas fa-download me-2"></i>Download Weight Chart
+        </button>
+        <h5 class="mt-4"><i class="fas fa-chart-area me-2"></i>Weight Progress</h5>
       
+        <div style="position: relative; width: 100%; height: 300px;">
+          <canvas id="weightChart"></canvas>
+        </div>
+      
+        <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+        <script>
+          const ctx = document.getElementById('weightChart').getContext('2d');
+          const weightChart = new Chart(ctx, {
+            type: 'line',
+            data: {
+              labels: {{ dates|safe }},
+              datasets: [{
+                label: 'Weight (kg)',
+                data: {{ weights|safe }},
+                borderColor: '#B91C1C',
+                backgroundColor: 'rgba(185, 28, 28, 0.1)',
+                borderWidth: 3,
+                pointBackgroundColor: '#B91C1C',
+                pointBorderColor: '#FFFFFF',
+                pointBorderWidth: 2,
+                pointRadius: 6,
+                pointHoverRadius: 8,
+                pointHoverBackgroundColor: '#991B1B',
+                pointHoverBorderColor: '#FFFFFF',
+                pointHoverBorderWidth: 3,
+                tension: 0.4,
+                fill: true
+              }]
+            },
+            options: {
+              responsive: true,
+              maintainAspectRatio: false,
+              plugins: {
+                legend: {
+                  labels: {
+                    color: '#1F2937',
+                    font: {
+                      weight: '600'
+                    }
+                  }
+                }
+              },
+              scales: {
+                x: {
+                  title: {
+                    display: true,
+                    text: 'Date',
+                    color: '#1F2937',
+                    font: {
+                      weight: '600'
+                    }
+                  },
+                  ticks: {
+                    color: '#6B7280'
+                  },
+                  grid: {
+                    color: 'rgba(185, 28, 28, 0.1)'
+                  }
+                },
+                y: {
+                  title: {
+                    display: true,
+                    text: 'Weight (kg)',
+                    color: '#1F2937',
+                    font: {
+                      weight: '600'
+                    }
+                  },
+                  ticks: {
+                    color: '#6B7280'
+                  },
+                  grid: {
+                    color: 'rgba(185, 28, 28, 0.1)'
+                  },
+                  beginAtZero: false
+                }
+              },
+              interaction: {
+                intersect: false,
+                mode: 'index'
+              }
+            }
+          });
+        </script>
+      </div> {% endcomment %}
 
+      <div id="weightChartSection">
+        <button onclick="downloadPDF('weightChartSection', 'weight_chart.pdf')" class="btn btn-outline-primary mb-3">
+          <i class="fas fa-download me-2"></i>Download Weight Chart
+        </button>
+        <h5><i class="fas fa-chart-area me-2"></i>Weight Progress Chart</h5>
+        
+        <div style="position: relative; width: 100%; height: 400px;">
+          <canvas id="weightChart"></canvas>
+        </div>
+        
+        <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+        <script>
+          const ctx = document.getElementById('weightChart').getContext('2d');
+          const weightChart = new Chart(ctx, {
+            type: 'line',
+            data: {
+              labels: {{ dates|safe }},
+              datasets: [{
+                label: 'Weight (kg)',
+                data: {{ weights|safe }},
+                borderColor: '#b91c1c',
+                backgroundColor: 'rgba(185, 28, 28, 0.1)',
+                borderWidth: 3,
+                pointBackgroundColor: '#b91c1c',
+                pointBorderColor: '#ffffff',
+                pointBorderWidth: 2,
+                pointRadius: 6,
+                pointHoverRadius: 10,
+                pointHoverBackgroundColor: '#991b1b',
+                pointHoverBorderColor: '#ffffff',
+                pointHoverBorderWidth: 3,
+                tension: 0.3,
+                fill: true
+              }]
+            },
+            options: {
+              responsive: true,
+              maintainAspectRatio: false,
+              interaction: {
+                intersect: false,
+                mode: 'index'
+              },
+              plugins: {
+                legend: {
+                  labels: {
+                    color: '#111827',
+                    font: {
+                      weight: 600
+                    }
+                  }
+                }
+              },
+              scales: {
+                x: {
+                  title: {
+                    display: true,
+                    text: 'Date',
+                    color: '#111827',
+                    font: {
+                      weight: 600
+                    }
+                  },
+                  grid: {
+                    color: 'rgba(185, 28, 28, 0.1)'
+                  }
+                },
+                y: {
+                  title: {
+                    display: true,
+                    text: 'Weight (kg)',
+                    color: '#111827',
+                    font: {
+                      weight: 600
+                    }
+                  },
+                  grid: {
+                    color: 'rgba(185, 28, 28, 0.1)'
+                  },
+                  beginAtZero: false
+                }
+              }
+            }
+          });
+        </script>
+      </div>
+  
+      <!-- DIET PLAN FORM -->
+      <div class="card shadow mt-4">
+        <div class="card-header text-white">
+          <h4 class="mb-0"><i class="fas fa-utensils me-2"></i>Diet Plan</h4>
+        </div>
+        <div class="card-body">
+          <form method="post">
+            {% csrf_token %}
+  
+            <div class="mb-3">
+              <label class="form-label">Calorie Intake Per Day</label>
+              <input type="number" step="1" class="form-control" name="calorie_intake_per_day" value="{{ diet_plan.calorie_intake_per_day|floatformat:0 }}">
+            </div>
+  
+            <div class="mb-3">
+              <label class="form-label">Carbs Per Meal (g)</label>
+              <input type="number" step="1" class="form-control" name="carbs_per_meal" value="{{ diet_plan.carbs_per_meal|floatformat:0 }}">
+            </div>
+  
+            <div class="mb-3">
+              <label class="form-label">Fats Per Meal (g)</label>
+              <input type="number" step="1" class="form-control" name="fats_per_meal" value="{{ diet_plan.fats_per_meal|floatformat:0 }}">
+            </div>
+  
+            <div class="mb-3">
+              <label class="form-label">Protein Per Meal (g)</label>
+              <input type="number" step="1" class="form-control" name="protein_per_meal" value="{{ diet_plan.protein_per_meal|floatformat:0 }}">
+            </div>
+  
+            <div class="mb-3">
+              <label class="form-label">Status</label>
+              <select name="status" class="form-select">
+                <option value="Pending" {% if diet_plan.status == 'Pending' %}selected{% endif %}>Pending</option>
+                <option value="Approved" {% if diet_plan.status == 'Approved' %}selected{% endif %}>Approved</option>
+                <option value="Rejected" {% if diet_plan.status == 'Rejected' %}selected{% endif %}>Rejected</option>
+              </select>
+              <h5 class="mt-2">Last Reviewed by: {{ approved_by }}</h5>
+            </div>
+  
+            <div class="mb-3">
+              <label class="form-label">Review Comments</label>
+              <textarea class="form-control" name="review_comments" rows="4"></textarea>
+            </div>
+  
+            <button type="submit" class="btn btn-success w-100">
+              <i class="fas fa-save me-2"></i>Save Changes
+            </button>
+          </form>
+        </div>
+      </div>
+    </div>
 
-
-
+    <!-- EXERCISE PLAN FORM -->
+    <div class="container my-5">
+        <h2 class="mb-4 text-center"><i class="fas fa-dumbbell me-2"></i>Exercise Plan</h2>
+        <form method="post" class="p-4 rounded shadow card">
+          {% csrf_token %}
+      
+          <div class="accordion" id="exerciseAccordion">
+            {% for day, exercises in exercise_plan.routine.items %}
+            <div class="accordion-item">
+              <h2 class="accordion-header" id="heading{{ forloop.counter }}">
+                <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapse{{ forloop.counter }}" aria-expanded="false" aria-controls="collapse{{ forloop.counter }}">
+                  <i class="fas fa-calendar-day me-2"></i>Day {{ forloop.counter }}
+                </button>
+              </h2>
+              <div id="collapse{{ forloop.counter }}" class="accordion-collapse collapse" aria-labelledby="heading{{ forloop.counter }}" data-bs-parent="#exerciseAccordion">
+                <div class="accordion-body" id="setting">
+                  {% for exercise in exercises %}
+                    <div class="row g-3 mb-3" id="Gustave">
+                      <div class="col-md-6">
+                        <label class="form-label">Exercise Name</label>
+                        <input type="text" class="form-control" name="routine[{{ day }}][{{ forloop.counter0 }}][name]" value="{{ exercise.name }}">
+                      </div>
+                      <div class="col-md-6">
+                        <label class="form-label">Duration</label>
+                        <input type="text" class="form-control" name="routine[{{ day }}][{{ forloop.counter0 }}][duration]" value="{{ exercise.duration }}">
+                      </div>
+                      <div class="col-md-6">
+                        <label class="form-label">Reps</label>
+                        <input type="number" class="form-control" name="routine[{{ day }}][{{ forloop.counter0 }}][reps]" value="{{ exercise.reps }}">
+                      </div>
+                      <div class="col-md-6">
+                        <label class="form-label">Sets</label>
+                        <input type="number" class="form-control" name="routine[{{ day }}][{{ forloop.counter0 }}][sets]" value="{{ exercise.sets }}">
+                      </div>
+                    </div>
+                  {% endfor %}
+                </div>               
+              </div>
+            </div>
+            {% endfor %}
+          </div>
+        </form>
+    </div>
 
     <script>
       function downloadPDF(sectionId, filename) {
@@ -330,8 +713,6 @@
     </script>
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.9.3/html2pdf.bundle.min.js"></script>
-
-      
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
 </body>
 </html>

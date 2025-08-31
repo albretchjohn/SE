@@ -53,7 +53,7 @@ class Profile(models.Model):
     bmi = models.FloatField(default=0)
     bmi_classification = models.TextField()
     body_type = models.CharField(max_length=20)
-    activity_level = models.CharField(max_length=20)
+    activity_level = models.CharField(max_length=20,null=True, blank=True)
     equipment_access = models.TextField()
     health_condition = models.TextField()
     allergies = models.TextField()

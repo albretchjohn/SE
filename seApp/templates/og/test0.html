@@ -1,0 +1,352 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+    {% comment %} original user_view_details.html {% endcomment %}
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>View User Details</title>
+    <link rel="stylesheet" href="{% static 'css/user_view_details_style.css' %}">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+      .list-group-item {
+        background-color: #FCFEDA !important;
+      }
+
+      {% comment %} .accordion-item,
+      .accordion-button,
+      .accordion-body {
+        background-color: #FCFEDA !important;
+      } {% endcomment %}
+    </style>
+</head>
+<body style="background-color: #FCFEDA;">
+  
+    <div class="details-container">
+
+          <a href="{% url 'csspe_dashboard' %}" class="btn btn-outline-secondary mb-4">
+            ← Back
+          </a>
+
+        <div class="container my-5">
+            <div class="row justify-content-center">
+              <div class="col-lg-8">
+                <div class="card shadow border-0">
+                  <div class="card-header bg-danger text-white text-center">
+                    <h4 class="mb-0">👤 User Details</h4>
+                  </div>
+                  <ul class="list-group list-group-flush">
+                    <li class="list-group-item"><strong>Name:</strong> {{ user_profile.first_name }} {{ user_profile.last_name }}</li>
+                    <li class="list-group-item"><strong>Department:</strong> {{ user_profile.college_department }}</li>
+                    <li class="list-group-item"><strong>Gender:</strong> {{ user_profile.gender }}</li>
+                    <li class="list-group-item"><strong>Birthday:</strong> {{ user_profile.birthday }}</li>
+                    <li class="list-group-item"><strong>Height:</strong> {{ user_profile.height }} cm</li>
+                    <li class="list-group-item"><strong>Original Weight:</strong> {{ user_profile.weight }} kg</li>
+                    <li class="list-group-item"><strong>BMI:</strong> {{ user_profile.bmi }}</li>
+                    <li class="list-group-item"><strong>Body Type:</strong> {{ user_profile.body_type }}</li>
+                    <li class="list-group-item"><strong>Activity Level:</strong> {{ user_profile.activity_level }}</li>
+                    <li class="list-group-item"><strong>Health Conditions:</strong> {{ user_profile.health_condition }}</li>
+                    <li class="list-group-item"><strong>Allergies:</strong> {{ user_profile.allergies }}</li>
+                    <li class="list-group-item"><strong>Injuries:</strong> {{ user_profile.injuries }}</li>
+                  </ul>
+                </div>
+              </div>
+            </div>
+          </div>
+          
+
+          {% if diet_plan %}
+          <div class="container my-5">
+            <div class="card shadow text-center">
+              <div class="card-header bg-success text-white">
+                <h4 class="mb-0">🥗 Diet Plan (Approved)</h4>
+              </div>
+              <div class="card-body" style="background-color: #FCFEDA;">
+                <p class="card-text fs-5">
+                  <strong>Calorie Intake Per Day:</strong> {{ diet_plan.calorie_intake_per_day }} kcal
+                </p>
+                <p class="card-text fs-5">
+                  <strong>Carbs Per Meal:</strong> {{ diet_plan.carbs_per_meal }} g
+                </p>
+                <p class="card-text fs-5">
+                  <strong>Fats Per Meal:</strong> {{ diet_plan.fats_per_meal }} g
+                </p>
+                <p class="card-text fs-5">
+                  <strong>Protein Per Meal:</strong> {{ diet_plan.protein_per_meal }} g
+                </p>
+              </div>
+            </div>
+          </div>
+          {% endif %}
+
+
+          <div class="d-flex justify-content-center mt-4">
+            <div class="accordion shadow-sm border-start border-4 border-info rounded-3 w-75" id="weightHistoryAccordion">
+              <div class="accordion-item" id="weightHistorySection">
+                <h2 class="accordion-header" id="headingOne">
+                  <button class="accordion-button collapsed fw-semibold text-info py-2 px-3" type="button" data-bs-toggle="collapse" data-bs-target="#collapseOne" style="background-color: #FCFEDA;">
+                    📉 View Weight History
+                  </button>
+                </h2>
+                <div id="collapseOne" class="accordion-collapse collapse" data-bs-parent="#weightHistoryAccordion">
+                  <div class="accordion-body p-3">
+                    <p><strong>Original Weight:</strong> {{ user_profile.weight }} kg</p>
+                    <table class="table table-sm table-striped table-bordered mb-0">
+                      
+                      <thead class="table-info text-center">
+                        <tr>
+                          <th>Date</th>
+                          <th>Weight (kg)</th>
+                          <th>Comment</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {% for entry in comments %}
+                        <tr class="text-center">
+                          <td>{{ entry.date_logged|date:"Y-m-d" }}</td>
+                          <td>{{ entry.weight }}</td>
+                          <td>{{ entry.comment|default:"-" }}</td>
+                        </tr>
+                        {% empty %}
+                        <tr>
+                          <td colspan="3" class="text-center text-muted">No history available.</td>
+                        </tr>
+                        {% endfor %}
+                        <button onclick="downloadPDF('weightHistorySection', 'weight_history.pdf')" class="btn btn-outline-primary mt-2">Download Weight History</button>
+                      </tbody>
+                    </table>
+                    {% comment %} <button onclick="downloadPDF('weightHistorySection', 'weight_history.pdf')" class="btn btn-outline-primary mt-2">Download Weight History</button> {% endcomment %}
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div id="weightChartSection" style="width: 100%; max-width: 800px; margin: auto; padding: 16px;">
+            <button onclick="downloadPDF('weightChartSection', 'weight_chart.pdf')" class="btn btn-outline-primary mt-3">
+              Download Weight Chart
+            </button>
+            <h5 class="mt-4">Weight Progress</h5>
+          
+            <div style="position: relative; width: 100%; height: 300px;">
+              <canvas id="weightChart"></canvas>
+            </div>
+          
+            <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+            <script>
+              const ctx = document.getElementById('weightChart').getContext('2d');
+              const weightChart = new Chart(ctx, {
+                type: 'line',
+                data: {
+                  labels: {{ dates|safe }},
+                  datasets: [{
+                    label: 'Weight (kg)',
+                    data: {{ weights|safe }},
+                    borderColor: 'rgba(54, 162, 235, 1)',
+                    backgroundColor: 'rgba(54, 162, 235, 0.2)',
+                    tension: 0.3,
+                    fill: true
+                  }]
+                },
+                options: {
+                  responsive: true,
+                  maintainAspectRatio: false,
+                  scales: {
+                    x: {
+                      title: {
+                        display: true,
+                        text: 'Date'
+                      }
+                    },
+                    y: {
+                      title: {
+                        display: true,
+                        text: 'Weight (kg)'
+                      },
+                      beginAtZero: false
+                    }
+                  }
+                }
+              });
+            </script>
+          </div>
+          
+          
+        
+          <div class="container my-5">
+              <h2 class="mb-4 text-center">Exercise Plan</h2>
+              <form method="post" class=" p-4 rounded shadow" style="background-color: #FCFEDA;">
+                {% csrf_token %}
+            
+                <div class="accordion" id="exerciseAccordion">
+                  {% for day, exercises in exercise_plan.routine.items %}
+                  <div class="accordion-item">
+                    <h2 class="accordion-header" id="heading{{ forloop.counter }}">
+                      <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapse{{ forloop.counter }}" aria-expanded="false" aria-controls="collapse{{ forloop.counter }}">
+                        {% comment %} {{ day|capfirst }} {% endcomment %} Day {{ forloop.counter }}
+                      </button>
+                    </h2>
+                    <div id="collapse{{ forloop.counter }}" class="accordion-collapse collapse" aria-labelledby="heading{{ forloop.counter }}" data-bs-parent="#exerciseAccordion">
+                      <div class="accordion-body" id="setting">
+                        {% for exercise in exercises %}
+                          <div class="row g-3 mb-3" id="Gustave">
+                            <div class="col-md-6">
+                              <label class="form-label">Exercise Name</label>
+                              <input type="text" class="form-control" name="routine[{{ day }}][{{ forloop.counter0 }}][name]" value="{{ exercise.name }}">
+                            </div>
+                            <div class="col-md-6">
+                              <label class="form-label">Duration</label>
+                              <input type="text" class="form-control" name="routine[{{ day }}][{{ forloop.counter0 }}][duration]" value="{{ exercise.duration }}">
+                            </div>
+                            <div class="col-md-6">
+                              <label class="form-label">Reps</label>
+                              <input type="number" class="form-control" name="routine[{{ day }}][{{ forloop.counter0 }}][reps]" value="{{ exercise.reps }}">
+                            </div>
+                            <div class="col-md-6">
+                              <label class="form-label">Sets</label>
+                              <input type="number" class="form-control" name="routine[{{ day }}][{{ forloop.counter0 }}][sets]" value="{{ exercise.sets }}">
+                            </div>
+                             <div class="text-end">
+                              <button type="button" class="btn btn-danger" onclick="removeExercise(this)">➖ Remove This Exercise</button>
+                            </div>                             
+                          </div>
+                        {% endfor %}
+                        <div class="text-center" id="exerciseAdd">
+                          <button type="button" class="btn btn-primary" onclick="addExercise(this)">➕ Add Exercise</button>
+                        </div> 
+                    </div>               
+                  </div>
+                  {% endfor %}
+                </div>
+            
+
+
+
+
+            
+              <div class="mt-4">
+                <label class="form-label">Status</label>
+                <select class="form-select" name="status">
+                  <option value="Pending" {% if exercise_plan.status == 'Pending' %}selected{% endif %}>Pending</option>
+                  <option value="Approved" {% if exercise_plan.status == 'Approved' %}selected{% endif %}>Approved</option>
+                  <option value="Rejected" {% if exercise_plan.status == 'Rejected' %}selected{% endif %}>Rejected</option>
+                </select>
+                <h5>Last Reviewed by: {{ approved_by }}</h5>
+              </div>
+          
+              <div class="mt-3 mb-4">
+                <label class="form-label">Review Comments</label>
+                <textarea class="form-control" name="review_comments" rows="4"></textarea>
+              </div>
+          
+              <div class="text-end">
+                <button type="submit" class="btn btn-success">💾 Save Changes</button>
+              </div>
+            </form>
+          </div>
+          </div>
+        </div>
+      
+        
+
+          
+          
+
+
+
+
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+  // For each day's accordion body
+  document.querySelectorAll('.accordion-body').forEach(function(body) {
+    // Add event listener for Add Exercise button, if it exists
+    const addBtn = body.querySelector('.btn-primary');
+    if (addBtn) {
+      addBtn.addEventListener('click', function() {
+        addExercise(body);
+      });
+    }
+    // Add event listeners for Remove buttons
+    body.querySelectorAll('.btn-danger').forEach(function(btn) {
+      btn.addEventListener('click', function() {
+        removeExercise(btn, body);
+      });
+    });
+  });
+
+  function addExercise(body) {
+    // Find all exercise rows in this day
+    const rows = body.querySelectorAll('.row.g-3');
+    const lastRow = rows[rows.length - 1];
+    const newRow = lastRow.cloneNode(true);
+
+    // Clear input values
+    newRow.querySelectorAll('input').forEach(input => input.value = '');
+
+    // Update input names (increment index)
+    const day = body.closest('.accordion-item').querySelector('.accordion-button').textContent.trim().replace('Day ', '');
+    const newIndex = rows.length;
+    newRow.querySelectorAll('input').forEach(input => {
+      input.name = input.name.replace(/\[\d+\]/, `[${newIndex}]`);
+    });
+
+    // Add remove button event
+    newRow.querySelector('.btn-danger').addEventListener('click', function() {
+      removeExercise(this, body);
+    });
+
+    // Insert before the Add button row
+    body.insertBefore(newRow, body.querySelector('#exerciseAdd'));
+  }
+
+  function removeExercise(btn, body) {
+    const rows = body.querySelectorAll('.row.g-3');
+    if (rows.length <= 1) {
+      alert("You cannot remove the last exercise. Please add another exercise before removing this one.");
+      return;
+    }
+    btn.closest('.row.g-3').remove();
+  }
+});
+</script>
+
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.9.3/html2pdf.bundle.min.js"></script>
+
+
+<script>
+  function downloadPDF(sectionId, filename) {
+    const element = document.getElementById(sectionId);
+    
+    // Save original styles
+    const originalWidth = element.style.width;
+    const originalMaxWidth = element.style.maxWidth;
+
+    // Temporarily stretch section to match PDF width
+    element.style.width = "1000px";      // Make wide enough for landscape
+    element.style.maxWidth = "none";     // Disable any Bootstrap container limits
+
+    const opt = {
+      margin: 0.2,
+      filename: filename,
+      image: { type: 'jpeg', quality: 0.98 },
+      html2canvas: { scale: 3, useCORS: true },
+      jsPDF: { unit: 'in', format: 'letter', orientation: 'landscape' }
+    };
+
+    html2pdf()
+      .from(element)
+      .set(opt)
+      .save()
+      .then(() => {
+        // Restore original styles after export
+        element.style.width = originalWidth;
+        element.style.maxWidth = originalMaxWidth;
+      });
+  }
+</script>
+
+</body>
+</html>
