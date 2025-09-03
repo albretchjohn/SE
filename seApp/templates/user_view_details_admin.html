@@ -249,7 +249,7 @@
     <div class="container mt-4">
   
       <!-- Logout Button -->
-      <div class="d-flex justify-content-end mb-3">
+      <div class="d-flex justify-content-start mb-3">
         <a href="{% url 'userList' %}" class="btn btn-outline-danger">
           <i class="fas fa-arrow-left me-2"></i>Back
         </a>
@@ -384,8 +384,38 @@
                       {% for entry in comments %}
                       <tr>
                         <td>{{ entry.date_logged|date:"Y-m-d" }}</td>
-                        <td>{{ entry.weight }}</td>
+                        <td>{{ entry.weight }}
+
+                          {% if entry.image %}
+                            <button type="button" class="btn btn-sm btn-light p-1" data-bs-toggle="modal" data-bs-target="#imageModal{{ entry.id }}">
+                              🔍 View
+                            </button>                              
+
+                          {% else %}
+                            <!-- Button to add image -->
+                            <p type="button" class="btn btn-sm btn-light p-1 mt-3">
+                              ❌ No Image
+                            </p>
+                          {% endif %}
+
+                        </td>
                         <td>{{ entry.comment|default:"-" }}</td>
+
+                        {% comment %} Show Image Modal {% endcomment %}
+                        <div class="modal fade" id="imageModal{{ entry.id }}" tabindex="-1" aria-hidden="true">
+                          <div class="modal-dialog modal-dialog-centered modal-lg">
+                            <div class="modal-content">
+                              <div class="modal-header">
+                                <h5 class="modal-title">Weight Image ({{ entry.weight }} kg)</h5>
+                                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                              </div>
+                              <div class="modal-body text-center">
+                                <img src="{% url 'weight_entry_image' entry.id %}" alt="Weight image" class="img-fluid rounded">
+                              </div>
+                            </div>
+                          </div>
+                        </div>    
+
                       </tr>
                       {% empty %}
                       <tr>

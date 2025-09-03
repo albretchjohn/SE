@@ -131,6 +131,8 @@ class WeightEntry(models.Model):
     user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
     weight = models.FloatField()
     comment = models.TextField(blank=True, null=True)
+    #image = models.ImageField(upload_to="weight_images/", blank=True, null=True) #use this to store as link, need persistent storage sa render, I am not paying that
+    image = models.BinaryField(blank=True, null=True)
     date_logged = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):

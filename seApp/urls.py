@@ -35,5 +35,8 @@ urlpatterns = [
     path('api/exercises/', views.api_exercises, name='api_exercises'),
     path('userList/', views.userList, name='userList'),
     path('adminUserView/<int:user_id>/', views.adminUserView, name='adminUserView'),
+    path('upload_image/<int:entry_id>/', views.upload_image, name='upload_image'),
+    path('weight-entry/<int:entry_id>/image/', views.weight_entry_image, name='weight_entry_image'),
+    path('remove-image/<int:entry_id>/remove-image/', views.remove_image, name='remove_image'),
     # path('api/exercises/', views.get_exercises, name='get_exercises'),
 ]

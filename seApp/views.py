@@ -14,6 +14,7 @@ from django.core.paginator import Paginator
 from django.db import models
 from django.db.models import OuterRef, Subquery, F, FloatField, ExpressionWrapper
 from django.db.models.functions import Abs
+from django.views.decorators.http import require_POST
 
 ##########################################
 
@@ -33,6 +34,7 @@ from django.http import JsonResponse, HttpResponseNotAllowed
 from django.views.decorators.csrf import csrf_exempt
 from django.shortcuts import render
 import json
+from django.http import HttpResponse, Http404
 
 ###########################################
 
@@ -565,6 +567,10 @@ def user_dashboard(request):
         dates = [entry.date_logged.strftime("%Y-%m-%d") for entry in chart_entries]
         weights = [entry.weight for entry in chart_entries]
         
+        if user_profile.weight:
+            dates.insert(0, "Start")
+            weights.insert(0, user_profile.weight)
+             
         current_bmi = None
         current_bmi_category = None
         if weight_entries and user_profile.height:
@@ -696,6 +702,10 @@ def user_view_details(request, user_id):
     dates = [entry.date_logged.strftime("%Y-%m-%d") for entry in chart_entries]
     weights = [entry.weight for entry in chart_entries]
     
+    if user_profile.weight:
+        dates.insert(0, "Start")
+        weights.insert(0, user_profile.weight)    
+    
 
     if request.method == 'POST':
         try:
@@ -770,6 +780,12 @@ def user_view_details_d(request, user_id):
     dates = [entry.date_logged.strftime("%Y-%m-%d") for entry in chart_entries]
     weights = [entry.weight for entry in chart_entries]
     
+    if user_profile.weight:
+        dates.insert(0, "Start")
+        weights.insert(0, user_profile.weight)    
+    
+    
+    
 
     if request.method == 'POST':
         diet_plan.calorie_intake_per_day = request.POST['calorie_intake_per_day']
@@ -813,6 +829,10 @@ def submit_progress(request):
         # lifestyle = request.POST.get('lifestyle', 'Sedentary')  # Default to 'Sedentary' if not provided
         lifestyle = request.POST.get('lifestyle')
         
+        allergies = request.POST.get('allergies')
+        injuries = request.POST.get('injuries')
+        conditions = request.POST.get('conditions')
+        
 
         if weight:
             WeightEntry.objects.create(
@@ -847,6 +867,18 @@ def submit_progress(request):
                 user_profile.activity_level = lifestyle
                 user_profile.save()
         
+        if allergies is not None:
+            user_profile.allergies = allergies
+            user_profile.save()
+        
+        if injuries is not None:
+            user_profile.injuries = injuries
+            user_profile.save()
+            
+        if conditions is not None:
+            user_profile.health_condition = conditions
+            user_profile.save()        
+        
             
             
         
@@ -855,6 +887,41 @@ def submit_progress(request):
         return redirect('user_dashboard')  # or wherever you want to redirect after saving
 
     return redirect('user_dashboard')  # fallback if accessed via GET
+
+@login_required
+@require_POST
+def upload_image(request, entry_id):
+    
+    # if request.method == "POST" and request.FILES.get("image"):
+    #     entry = get_object_or_404(WeightEntry, id=entry_id, user=request.user)
+    #     entry.image = request.FILES["image"]
+    #     entry.save()
+    
+    entry = get_object_or_404(WeightEntry, id=entry_id, user=request.user)
+
+    if 'image' in request.FILES:
+        uploaded_file = request.FILES['image']
+        entry.image = uploaded_file.read()  # store raw bytes in DB
+        entry.save()
+    
+    return redirect('user_dashboard')
+
+def remove_image(request, entry_id):
+    entry = get_object_or_404(WeightEntry, id=entry_id, user=request.user)
+    if request.method == "POST":
+        entry.image = None
+        entry.save()
+    return redirect('user_dashboard')
+
+
+
+def weight_entry_image(request, entry_id):
+    #entry = get_object_or_404(WeightEntry, id=entry_id, user=request.user)
+    entry = get_object_or_404(WeightEntry, id=entry_id)
+    if entry.image:
+        return HttpResponse(entry.image, content_type="image/jpeg")  # or detect PNG
+    raise Http404("Image not found")
+    
 
 
 def exercise_data_view(request):
@@ -1018,6 +1085,10 @@ def adminUserView(request, user_id): #this is user_view_details_admin
         chart_entries = WeightEntry.objects.filter(user=user_id).order_by("date_logged")
         dates = [entry.date_logged.strftime("%Y-%m-%d") for entry in chart_entries]
         weights = [entry.weight for entry in chart_entries]
+        
+        if user_profile.weight:
+            dates.insert(0, "Start")
+            weights.insert(0, user_profile.weight)         
         
         current_bmi = None
         current_bmi_category = None

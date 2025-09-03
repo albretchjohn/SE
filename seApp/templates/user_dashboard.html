@@ -280,6 +280,25 @@
           {% endif %}
           <p><strong>Height:</strong> {{ user_profile.height }} cm</p>
           <p><strong>Original BMI:</strong> {{ user_profile.bmi }} || <strong>Current BMI:</strong> {{ current_bmi }} || Currently <strong>{{ current_bmi_category }}</strong></p>
+
+          <p><strong>Allergies:</strong> {% if user_profile.allergies == "no" %}None{% else %}{{ user_profile.allergies|default:"None" }}{% endif %}
+              <button class="btn btn-sm btn-light p-1" data-bs-toggle="modal" data-bs-target="#editAllergy">
+                    ✏️
+              </button>
+          </p>
+
+          <p><strong>Injuries:</strong> {% if user_profile.injuries == "no" %}None{% else %}{{ user_profile.injuries|default:"None" }}{% endif %}
+              <button class="btn btn-sm btn-light p-1" data-bs-toggle="modal" data-bs-target="#editInjuries">
+                    ✏️
+              </button>
+          </p>
+
+          <p><strong>Health Conditions:</strong> {% if user_profile.health_condition == "none" %}None{% else %}{{ user_profile.health_condition|default:"None" }}{% endif %}
+              <button class="btn btn-sm btn-light p-1" data-bs-toggle="modal" data-bs-target="#editCondition">
+                    ✏️
+              </button>        
+          </p>
+
           <h5 class="card-title"><i class="fas fa-chart-bar me-2"></i>BMI Guide</h5>
           <ul class="list-group list-group-flush">
             <li class="list-group-item"><strong>Underweight:</strong> &lt; 18.5</li>
@@ -289,7 +308,133 @@
           </ul>
         </div>
       </div>
-  
+
+      {% comment %} =======================MODALS=========================== {% endcomment %}
+
+      <div class="modal fade" id="editAllergy" tabindex="-1">
+        <div class="modal-dialog">
+          <div class="modal-content">
+            <form method="POST" action="{% url 'submit_progress' %}">
+              {% csrf_token %}
+              <div class="modal-header">
+                <h5 class="modal-title">Edit Allergies</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+              </div>
+              <div class="modal-body">
+                <div class="mb-3">
+                  <label class="form-label">Allergies:</label>
+                  <textarea class="form-control" name="allergies" rows="3">{{ user_profile.allergies }}</textarea>
+                </div>
+              </div>
+              <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                <button type="submit" class="btn btn-primary">Save</button>
+              </div>
+            </form>
+          </div>
+        </div>
+      </div>
+
+
+      <div class="modal fade" id="editInjuries" tabindex="-1">
+        <div class="modal-dialog">
+          <div class="modal-content">
+            <form method="POST" action="{% url 'submit_progress' %}">
+              {% csrf_token %}
+              <div class="modal-header">
+                <h5 class="modal-title">Edit Injuries</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+              </div>
+              <div class="modal-body">
+                <div class="mb-3">
+                  <label class="form-label">Injuries:</label>
+                  <textarea class="form-control" name="injuries" rows="3">{{ user_profile.injuries }}</textarea>
+                </div>
+              </div>
+              <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                <button type="submit" class="btn btn-primary">Save</button>
+              </div>
+            </form>
+          </div>
+        </div>
+      </div>
+
+
+
+      <div class="modal fade" id="editCondition" tabindex="-1">
+        <div class="modal-dialog">
+          <div class="modal-content">
+            <form method="POST" action="{% url 'submit_progress' %}">
+              {% csrf_token %}
+              <div class="modal-header">
+                <h5 class="modal-title">Edit Health Conditions</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+              </div>
+              <div class="modal-body">
+                <div class="mb-3">
+                  <label class="form-label">Health Conditionss:</label>
+                  <textarea class="form-control" name="conditions" rows="3">{{ user_profile.health_conditions }}</textarea>
+                </div>
+              </div>
+              <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                <button type="submit" class="btn btn-primary">Save</button>
+              </div>
+            </form>
+          </div>
+        </div>
+      </div>
+
+      {% comment %} <div class="modal fade" id="imageModal" tabindex="-1" aria-labelledby="imageModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+          <div class="modal-content">
+            
+            <div class="modal-header">
+              <h5 class="modal-title" id="imageModalLabel">Image Preview</h5>
+              <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            
+            <div class="modal-body text-center">
+              <!-- Replace with your own image -->
+              <img src="{% static 'images/sample.jpg' %}" class="img-fluid rounded" alt="Preview">
+            </div>
+            
+            <div class="modal-footer">
+              <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+            </div>
+            
+          </div>
+        </div>
+      </div>       {% endcomment %}
+
+      {% comment %} <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#imageModal">
+        Show Image
+      </button> {% endcomment %}
+
+    {% comment %} <div class="modal fade" id="imageModal{{ forloop.counter }}" tabindex="-1" aria-hidden="true">
+      <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title">Weight Entry Image</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+          </div>
+          <div class="modal-body text-center">
+            <img src="{{ entry.image.url }}" alt="Entry Image" class="img-fluid rounded">
+          </div>
+        </div>
+      </div>
+    </div> {% endcomment %}
+
+
+
+
+
+
+
+
+      {% comment %} ============================================================== {% endcomment %}
+
       {% if diet_plan and exercise_plan %}
         <!-- Diet Plan Card -->
         <div class="card shadow mb-4">
@@ -426,8 +571,103 @@
                       {% for entry in comments %}
                       <tr>
                         <td>{{ entry.date_logged|date:"Y-m-d" }}</td>
-                        <td>{{ entry.weight }}</td>
+                        <td>{{ entry.weight }}
+                            {% if entry.image %}
+                              <!-- Show preview -->
+                              {% comment %} <img src="{{ entry.image.url }}" alt="Weight Image" class="img-thumbnail mb-2" style="max-width: 80px;"> {% endcomment %}
+                              {% comment %} <img src="{% url 'weight_entry_image' entry.id %}" alt="Weight image" style="max-width:200px;"> {% endcomment %}
+
+                              <button type="button" class="btn btn-sm btn-light p-1" data-bs-toggle="modal" data-bs-target="#imageModal{{ entry.id }}">
+                                🔍 View
+                              </button>                              
+
+                              <!-- Button to update image -->
+                              <button type="button" class="btn btn-sm btn-light p-1" data-bs-toggle="modal" data-bs-target="#uploadModal{{ entry.id }}">
+                                ✏️ Edit
+                              </button>
+                            {% else %}
+                              <!-- Button to add image -->
+                              <button type="button" class="btn btn-sm btn-light p-1" data-bs-toggle="modal" data-bs-target="#uploadModal{{ entry.id }}">
+                                ➕ Add Image
+                              </button>
+                            {% endif %}
+                              
+                              
+                        </td>
                         <td>{{ entry.comment|default:"-" }}</td>
+
+                        {% comment %} Upload Modal {% endcomment %}
+                        {% comment %} <div class="modal fade" id="uploadModal{{ entry.id }}" tabindex="-1" aria-hidden="true">
+                          <div class="modal-dialog">
+                            <div class="modal-content">
+                              <form method="POST" action="{% url 'upload_image' entry.id %}" enctype="multipart/form-data">
+                                {% csrf_token %}
+                                <div class="modal-header">
+                                  <h5 class="modal-title">
+                                    {% if entry.image %}Update{% else %}Upload{% endif %} Image for {{ entry.weight }} kg
+                                  </h5>
+                                  <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                                </div>
+                                <div class="modal-body">
+                                  <input type="file" name="image" accept="image/*" class="form-control" required>
+                                </div>
+                                <div class="modal-footer">
+                                  <button type="submit" class="btn btn-primary">Save</button>
+                                  <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                                </div>
+                              </form>
+                            </div>
+                          </div>
+                        </div> {% endcomment %}
+
+
+                        <div class="modal fade" id="uploadModal{{ entry.id }}" tabindex="-1" aria-hidden="true">
+                          <div class="modal-dialog">
+                            <div class="modal-content">
+                              <!-- Upload/Update Image Form -->
+                              <form method="POST" action="{% url 'upload_image' entry.id %}" enctype="multipart/form-data">
+                                {% csrf_token %}
+                                <div class="modal-header">
+                                  <h5 class="modal-title">
+                                    {% if entry.image %}Update{% else %}Upload{% endif %} Image for {{ entry.weight }} kg
+                                  </h5>
+                                  <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                                </div>
+                                <div class="modal-body">
+                                  <input type="file" name="image" accept="image/*" class="form-control" {% if not entry.image %}required{% endif %}>
+                                </div>
+                                <div class="modal-footer">
+                                  <button type="submit" class="btn btn-primary">Save</button>
+                                  <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                                </div>
+                              </form>
+                              {% if entry.image %}
+                              <!-- Remove Image Form (separate, not nested) -->
+                              <form method="POST" action="{% url 'remove_image' entry.id %}" style="display:inline; margin: 0 1rem 1rem 1rem;">
+                                {% csrf_token %}
+                                <button type="submit" class="btn btn-danger">Remove Existing Image</button>
+                              </form>
+                              {% endif %}
+                            </div>
+                          </div>
+                        </div>                        
+
+                        
+                        {% comment %} Show Image Modal {% endcomment %}
+                        <div class="modal fade" id="imageModal{{ entry.id }}" tabindex="-1" aria-hidden="true">
+                          <div class="modal-dialog modal-dialog-centered modal-lg">
+                            <div class="modal-content">
+                              <div class="modal-header">
+                                <h5 class="modal-title">Weight Image ({{ entry.weight }} kg)</h5>
+                                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                              </div>
+                              <div class="modal-body text-center">
+                                <img src="{% url 'weight_entry_image' entry.id %}" alt="Weight image" class="img-fluid rounded">
+                              </div>
+                            </div>
+                          </div>
+                        </div>                        
+                                                 
                       </tr>
                       {% empty %}
                       <tr>
@@ -462,6 +702,7 @@
               type: 'line',
               data: {
                 labels: {{ dates|safe }},
+                data: {{ weights|safe }},
                 datasets: [{
                   label: 'Weight (kg)',
                   data: {{ weights|safe }},
