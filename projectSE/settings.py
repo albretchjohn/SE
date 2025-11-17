@@ -149,13 +149,28 @@ WSGI_APPLICATION = 'projectSE.wsgi.application'
 #     }
 # }
 
+# DATABASES = {
+#     'default': {
+#         'ENGINE': 'django.db.backends.postgresql',
+#         'NAME': 'wmsuwellness_7q65',
+#         'USER': 'wmsuwellness_7q65_user',
+#         'PASSWORD': 'iHoTUrGaRhGiX6ofPlJ359DIDqYJGmlO',
+#         'HOST': 'dpg-d2lvanruibrs73flnej0-a.oregon-postgres.render.com',
+#         'PORT': '5432',
+#         'OPTIONS': {
+#             'sslmode': 'require',
+#             # 'options': '-c search_path=db_se,public'
+#         }
+#     }
+# }
+
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql',
-        'NAME': 'wmsuwellness_7q65',
-        'USER': 'wmsuwellness_7q65_user',
-        'PASSWORD': 'iHoTUrGaRhGiX6ofPlJ359DIDqYJGmlO',
-        'HOST': 'dpg-d2lvanruibrs73flnej0-a.oregon-postgres.render.com',
+        'NAME': 'finaleofdevastation',
+        'USER': 'finaleofdevastation_user',
+        'PASSWORD': 'XgknjrmenGik6RogJ7FPsynzfnYi7JcW',
+        'HOST': 'dpg-d4da2mripnbc739tuh4g-a.oregon-postgres.render.com',
         'PORT': '5432',
         'OPTIONS': {
             'sslmode': 'require',
