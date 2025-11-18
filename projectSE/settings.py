@@ -230,7 +230,7 @@ EMAIL_PORT = 587
 EMAIL_USE_TLS = True
 EMAIL_HOST_USER = 'fharhanasali19@gmail.com'
 EMAIL_HOST_PASSWORD = 'gyvv xser mdag hnyi'
-EMAIL_TIMEOUT = 10
+
 AUTH_USER_MODEL = 'seApp.CustomUser'
 
 STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
