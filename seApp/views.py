@@ -38,7 +38,8 @@ from django.http import HttpResponse, Http404
 
 ###########################################
 
-
+import logging
+logger = logging.getLogger(__name__)
 # User = get_user_model()
 
 #to home/landing page
@@ -101,23 +102,68 @@ def resend_otp(request):
     return render(request, 'resend_otp.html')
 
 #registering wellness users
+# def register_user(request):
+#     if request.method == 'POST':
+#         username = request.POST['username']
+#         email = request.POST['email']
+#         password = request.POST['password']
+
+#         user = CustomUser.objects.create_user(username=username, email=email, password=password, user_type='user')
+#         user.is_active = False
+#         user.save()
+
+#         otp_code = str(random.randint(100000, 999999))
+#         OTP.objects.create(user=user, otp_code=otp_code, expires_at=timezone.now() + timezone.timedelta(minutes=10))
+
+#         send_otp_email(user, otp_code)
+
+#         messages.success(request, 'User registered successfully. Please check your email for the OTP code.')
+#         return redirect('verify_otp')
+
+#     return render(request, 'register_user.html')
+
+
+
+
 def register_user(request):
     if request.method == 'POST':
-        username = request.POST['username']
-        email = request.POST['email']
-        password = request.POST['password']
+        try:
+            username = request.POST['username']
+            email = request.POST['email']
+            password = request.POST['password']
 
-        user = CustomUser.objects.create_user(username=username, email=email, password=password, user_type='user')
-        user.is_active = False
-        user.save()
+            user = CustomUser.objects.create_user(
+                username=username, 
+                email=email, 
+                password=password, 
+                user_type='user'
+            )
+            user.is_active = False
+            user.save()
 
-        otp_code = str(random.randint(100000, 999999))
-        OTP.objects.create(user=user, otp_code=otp_code, expires_at=timezone.now() + timezone.timedelta(minutes=10))
+            otp_code = str(random.randint(100000, 999999))
+            OTP.objects.create(
+                user=user, 
+                otp_code=otp_code, 
+                expires_at=timezone.now() + timezone.timedelta(minutes=10)
+            )
 
-        send_otp_email(user, otp_code)
+            # Try to send email, but don't break if it fails
+            try:
+                send_otp_email(user, otp_code)
+                logger.info(f"OTP email sent to {user.email}")
+            except Exception as e:
+                logger.error(f"Failed to send OTP email: {e}")
+                # Still allow registration to continue
+                # You could store the OTP and allow manual retrieval
 
-        messages.success(request, 'User registered successfully. Please check your email for the OTP code.')
-        return redirect('verify_otp')
+            messages.success(request, 'User registered successfully. Please check your email for the OTP code.')
+            return redirect('verify_otp')
+            
+        except Exception as e:
+            logger.error(f"Registration error: {e}")
+            messages.error(request, 'Registration failed. Please try again.')
+            return render(request, 'register_user.html')
 
     return render(request, 'register_user.html')
 
