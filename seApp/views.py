@@ -38,8 +38,8 @@ from django.http import HttpResponse, Http404
 
 ###########################################
 
-import logging #not in use
-logger = logging.getLogger(__name__) #not in use
+import logging 
+logger = logging.getLogger(__name__) 
 # User = get_user_model()
 
 #to home/landing page
