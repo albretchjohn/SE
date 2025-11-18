@@ -66,7 +66,7 @@ def send_otp_email(user, otp_code):
         'fharhanasali19@gmail.com',
         [user.email],
         fail_silently=False,
-        timeout=100,
+        # timeout=100,
     )
 
 #resends otp if expires
